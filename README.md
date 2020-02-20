@@ -48,7 +48,10 @@ Swift supports architecture-specific code. By default, Foundation imports archit
 
 Another important detail about testing for Linux is the `Tests/LinuxMain.swift` file. For versions prior to Swift 5.1, This file provides SwiftPM an index of all the tests it needs to run on Linux. 
 
-- For version Swift 5.1 and later, this file is no longer required and testing with `--enable-test-discovery` seamlessly discovers the tests. This will be the default behvior in future releases of Swift.
+- For version Swift 5.1 and later, this file is no longer required and testing with `--enable-test-discovery` seamlessly discovers the tests. This will be the default behvior in future releases of Swift. Until this is the default, it can be useful 
+to keep `Tests/LinuxMain.swift` around but with with the following code to remind you to use the flag:
+
+   `fatalError("Please use `swift test --enable-test-discovery` to run the tests instead")`
 
 - For versions prior to Swift 5.1, it is critical to keep this file up-to-date as you add more unit tests. To regenerate this file, run `swift test --generate-linuxmain` after adding tests. It is also a good idea to include this command as part of the continuous integration setup. For version Swift 5.1 or later, this 
 
