@@ -73,7 +73,7 @@ to keep `Tests/LinuxMain.swift` around but with with the following code to remin
 
 - If you have `--privileged`/`--security-opt seccomp=unconfined` containers or are running in VMs or even bare metal, you can run your binary with
 
-        lldb --batch -o run -k "image list" -k "register read" -k "bt all" -k "exit 134" ./my-program
+        lldb --batch -o "break set -n main --auto-continue 1 -C \"process handle SIGPIPE -s 0\"" -o run -k "image list" -k "register read" -k "bt all" -k "exit 134" ./my-program
 
     instead of `./my-program` to get something something akin to a 'crash report' on crash.
 
