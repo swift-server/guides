@@ -70,10 +70,7 @@ to keep `Tests/LinuxMain.swift` around but with with the following code to remin
 ### Debugging Common Issues
 
 - [Memory leaks](memory-leaks.md)
-
-### Debugging Performance Issues
-
-- `perf` output, strack traces, etc. often appear "mangled" (lots of stuff looking like `3NIO14CircularBufferV5IndexV`). You can use `swift demangle` to turn that into human-readable symbol names. If you have such a file, use `cat file-containing-mangled-stuff | swift demangle` and it will look much more readable.
+- [Performance issues](performace.md)
 
 ### Deploying a Debuggable Configuration (Production on Linux)
 
