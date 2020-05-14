@@ -70,7 +70,7 @@ to keep `Tests/LinuxMain.swift` around but with with the following code to remin
 ### Debugging Common Issues
 
 - [Memory leaks](memory-leaks.md)
-- [Performance issues](performace.md)
+- [Performance issues](performance.md)
 
 ### Deploying a Debuggable Configuration (Production on Linux)
 
