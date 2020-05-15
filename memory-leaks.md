@@ -1,6 +1,7 @@
 # Debugging Memory Leaks
 
-Debugging memory leaks isn't straightforward on Linux, it's much easier done on macOS using [Instruments](https://help.apple.com/instruments/mac/10.0/#/dev022f987b) or `leaks`. If you cannot reproduce the problem on macOS, not all is lost, find a few suggestions below. The fine folks at IBM have also put together a [guide on diagnosing memory leaks](https://developer.ibm.com/swift/2018/01/26/diagnosing-server-side-swift-memory-leaks/).
+Debugging memory leaks isn't straightforward on Linux, it's much easier done on macOS. The best tool is usually the Xcode's [Memory Graph Debugger](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/debugging_with_xcode/chapters/special_debugging_workflows.html#//apple_ref/doc/uid/TP40015022-CH9-DontLinkElementID_1).
+[Instruments](https://help.apple.com/instruments/mac/10.0/#/dev022f987b) and `leaks` can also be very useful. If you cannot reproduce the problem on macOS, not all is lost, find a few suggestions below. The fine folks at IBM have also put together a [guide on diagnosing memory leaks](https://developer.ibm.com/swift/2018/01/26/diagnosing-server-side-swift-memory-leaks/).
 
 ## Example program
 
