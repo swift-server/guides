@@ -6,7 +6,7 @@ Once an application is built for production, it still needs to be packaged befor
 
 One of the most popular ways to package applications these days is using container technologies such as [Docker](https://www.docker.com).
 
-Using Docker's tooling, we can build and package the application as a Docker image, publish it to a Docker repository, and later launch it directly on a server or on a platform that supports Docker deployments such as [Kuberenetes](https://kubernetes.io). Many public cloud provides including AWS, GCP, Azure, IBM and others encourage this kind of deployment.
+Using Docker's tooling, we can build and package the application as a Docker image, publish it to a Docker repository, and later launch it directly on a server or on a platform that supports Docker deployments such as [Kubernetes](https://kubernetes.io). Many public cloud providers including AWS, GCP, Azure, IBM and others encourage this kind of deployment.
 
 Here is an example `Dockerfile` that builds and packages the application on top of CentoOS:
 
