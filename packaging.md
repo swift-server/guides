@@ -1,6 +1,6 @@
 # Packaging Applications for Deployment
 
-Once the application is built for production, it still needs to be packaged before it can be deployed to servers. There are several strategies for packaging Swift applications for deployment.
+Once an application is built for production, it still needs to be packaged before it can be deployed to servers. There are several strategies for packaging Swift applications for deployment.
 
 ## Docker
 
@@ -34,7 +34,7 @@ COPY --from=builder /usr/lib/swift/linux/lib*so* /
 CMD ["<executable-name>"]
 ```
 
-To create the local Docker image from the `Dockerfile` use the `docker build` command from the application's source location, e.g.:
+To create a local Docker image from the `Dockerfile` use the `docker build` command from the application's source location, e.g.:
 
 ```bash
 $ docker build . -t <my-app>:<my-app-version>
@@ -46,14 +46,14 @@ To test the local image use the `docker run` command, .e.g.:
 $ docker run <my-app>:<my-app-version>
 ```
 
-Finally, use the `docker push` command to publish the Application's Docker image to a Docker repository of your choice. e.g.:
+Finally, use the `docker push` command to publish the application's Docker image to a Docker repository of your choice. e.g.:
 
 ```bash
 $ docker tag <my-app>:<my-app-version> <docker-hub-user>/<my-app>:<my-app-version>
 $ docker push <docker-hub-user>/<my-app>:<my-app-version>
 ```
 
-At this point, the application's Docker image is ready to be deployed to the server hosts (which need to run docker), or to one of the platforms that support Docker deployments.
+At this point, the application's Docker image is ready to be deployed to the server hosts (which need to run docker), or to one of the platforms that supports Docker deployments.
 
 See [Docker's documentation](https://docs.docker.com/engine/reference/commandline/) for more complete information about Docker.
 
@@ -90,17 +90,17 @@ COPY --from=builder /usr/lib/swift/linux/lib*so* /
 CMD ["<executable-name>"]
 ```
 
-Note the above this uses `gcr.io/distroless/cc-debian10` as the runtime image which should work for Swift programs that do not use `FoundationNetworking` or `FoundationXML`. In order to provide a more complete support we (the community) could put in a PR into distroless to introduce a base image for Swift that includes `libcurl` and `libxml` which are required for `FoundationNetworking` and `FoundationXML` respectively.
+Note the above uses `gcr.io/distroless/cc-debian10` as the runtime image which should work for Swift programs that do not use `FoundationNetworking` or `FoundationXML`. In order to provide more complete support we (the community) could put in a PR into distroless to introduce a base image for Swift that includes `libcurl` and `libxml` which are required for `FoundationNetworking` and `FoundationXML` respectively.
 
-## Archive (Tarball, Zipfile, etc)
+## Archive (Tarball, ZIP file, etc.)
 
-Since cross compiling Swift for Linux is not [yet] supported on Mac or Windows, we need to use use virtualization technologies like Docker to compile applications we are targeting to run on Linux.
+Since cross-compiling Swift for Linux is not [yet] supported on Mac or Windows, we need to use virtualization technologies like Docker to compile applications we are targeting to run on Linux.
 
-That said, this does not mean we must also package the applications as Docker images in order to deploy them. While using Docker images for deployment is convenient and popular, an application can also be packaged using a simple and lightweight archive format like tarball or zipfile, then uploaded to the server where it can be extracted and run.
+That said, this does not mean we must also package the applications as Docker images in order to deploy them. While using Docker images for deployment is convenient and popular, an application can also be packaged using a simple and lightweight archive format like tarball or ZIP file, then uploaded to the server where it can be extracted and run.
 
 Here is an example of using Docker and `tar` to build and package the application for deployment on Ubuntu servers:
 
-First, use the `docker run` command from the application's source location to build the application:
+First, use the `docker run` command from the application's source location to build it:
 
 ```bash
 $ docker run --rm \
@@ -110,7 +110,7 @@ $ docker run --rm \
   /bin/bash -cl "swift build -c release -Xswiftc -g"
 ```
 
-Note we are bind mounting the source directory so that the build writes the  build artifacts to the local drive from which we will package them later.
+Note we are bind mounting the source directory so that the build writes the build artifacts to the local drive from which we will package them later.
 
 Next we can create a staging area with the application's executables and Swift's dynamic libraries dependencies:
 
@@ -125,7 +125,7 @@ $ docker run --rm \
      cp -P /usr/lib/swift/linux/lib*so* .build/install/'
 ```
 
-Note this command could be combined with the build command above, we separated them to make the example more readable.
+Note this command could be combined with the build command above--we separated them to make the example more readable.
 
 Finally, create a tarball from the staging directory:
 
@@ -140,7 +140,7 @@ $ cd <extracted directory>
 $ docker run -v `pwd`:/app -w /app swift:5.2-bionic-slim ./<executable-name>
 ```
 
-Deploying the application's tarball to the target server can be done using utilities like `scp`, or in a more sophisticated setup using configuration management system like `chef`, `puppet`, `ansible`,  etc
+Deploying the application's tarball to the target server can be done using utilities like `scp`, or in a more sophisticated setup using configuration management system like `chef`, `puppet`, `ansible`, etc.
 
 
 ## Source Distribution
@@ -151,6 +151,6 @@ To build Swift applications directly on the server, the server must have the cor
 
 The main advantage of this approach is that it is easy. Additional advantage is the server has the full toolchain (e.g. debugger) that can help troubleshoot issues "live" on the server.
 
-The main disadvantage of this approach that the server has the full toolchain (e.g. compiler) which means a sophisticated attacker can potentially find ways to execute code. They can also potentially gain access to the source code which might be sensitive. If the application code needs to cloned from a private or protected repository, the server needs access to credentials which adds additional attack surface area.
+The main disadvantage of this approach that the server has the full toolchain (e.g. compiler) which means a sophisticated attacker can potentially find ways to execute code. They can also potentially gain access to the source code which might be sensitive. If the application code needs to be cloned from a private or protected repository, the server needs access to credentials which adds additional attack surface area.
 
 In most cases, source distribution is not advised due to these security concerns.
