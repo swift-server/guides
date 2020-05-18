@@ -104,7 +104,7 @@ First, use the `docker run` command from the application's source location to bu
 
 ```bash
 $ docker run --rm \
-  -v `pwd`:/workspace \
+  -v "$PWD:/workspace" \
   -w /workspace \
   swift:5.2-bionic \
   /bin/bash -cl "swift build -c release"
@@ -116,12 +116,12 @@ Next we can create a staging area with the application's executables and Swift's
 
 ```bash
 $ docker run --rm \
-  -v `pwd`:/workspace \
+  -v "$PWD:/workspace" \
   -w /workspace \
   swift:5.2-bionic  \
   /bin/bash -cl ' \
-     rm -rf .build/install && mkdir -p .build/install; \
-     cp -P .build/release/<executable-name> .build/install/; \
+     rm -rf .build/install && mkdir -p .build/install && \
+     cp -P .build/release/<executable-name> .build/install/ && \
      cp -P /usr/lib/swift/linux/lib*so* .build/install/'
 ```
 
@@ -137,7 +137,7 @@ We can test the integrity of the tarball by extracting it to a directory and run
 
 ```bash
 $ cd <extracted directory>
-$ docker run -v `pwd`:/app -w /app swift:5.2-bionic-slim ./<executable-name>
+$ docker run -v "$PWD:/app" -w /app swift:5.2-bionic-slim ./<executable-name>
 ```
 
 Deploying the application's tarball to the target server can be done using utilities like `scp`, or in a more sophisticated setup using configuration management system like `chef`, `puppet`, `ansible`, etc.
