@@ -21,7 +21,7 @@ WORKDIR /workspace
 # copy the source to the docker image
 COPY . /workspace
 
-RUN swift build -c release -Xswiftc -g
+RUN swift build -c release
 
 #------- package -------
 FROM centos:8
@@ -75,7 +75,7 @@ WORKDIR /workspace
 # copy the source to the docker image
 COPY . /workspace
 
-RUN swift build -c release -Xswiftc -g
+RUN swift build -c release
 
 #------- package -------
 # Running on distroless C++ since it includes
@@ -107,7 +107,7 @@ $ docker run --rm \
   -v `pwd`:/workspace \
   -w /workspace \
   swift:5.2-bionic \
-  /bin/bash -cl "swift build -c release -Xswiftc -g"
+  /bin/bash -cl "swift build -c release"
 ```
 
 Note we are bind mounting the source directory so that the build writes the build artifacts to the local drive from which we will package them later.
