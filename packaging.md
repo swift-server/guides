@@ -8,7 +8,7 @@ One of the most popular ways to package applications these days is using contain
 
 Using Docker's tooling, we can build and package the application as a Docker image, publish it to a Docker repository, and later launch it directly on a server or on a platform that supports Docker deployments such as [Kubernetes](https://kubernetes.io). Many public cloud providers including AWS, GCP, Azure, IBM and others encourage this kind of deployment.
 
-Here is an example `Dockerfile` that builds and packages the application on top of CentoOS:
+Here is an example `Dockerfile` that builds and packages the application on top of CentOS:
 
 ```Dockerfile
 #------- build -------
