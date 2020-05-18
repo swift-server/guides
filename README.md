@@ -82,6 +82,8 @@ to keep `Tests/LinuxMain.swift` around but with with the following code to remin
 
 - If you don't have `--privileged` (or `--security-opt seccomp=unconfined`) containers (meaning you won't be able to use `lldb`) or you don't want to use lldb, consider using a library like [`swift-backtrace`](https://github.com/swift-server/swift-backtrace) to get stack traces on crash.
 
-## Deployment to Public Cloud
+## Deployment to Servers or Public Cloud
+
+Once an application is built for production, it needs to be packaged for deployment. There are several strategies for packaging Swift applications for deployment, see the [Packaging Guide](packaging.md) for more information.
 
 TODO: add guides for popular public clouds like AWS, GCP, Azure, Heroku, etc.
