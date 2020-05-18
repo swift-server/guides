@@ -40,13 +40,13 @@ To create a local Docker image from the `Dockerfile` use the `docker build` comm
 $ docker build . -t <my-app>:<my-app-version>
 ```
 
-To test the local image use the `docker run` command, .e.g.:
+To test the local image use the `docker run` command, e.g.:
 
 ```bash
 $ docker run <my-app>:<my-app-version>
 ```
 
-Finally, use the `docker push` command to publish the application's Docker image to a Docker repository of your choice. e.g.:
+Finally, use the `docker push` command to publish the application's Docker image to a Docker repository of your choice, e.g.:
 
 ```bash
 $ docker tag <my-app>:<my-app-version> <docker-hub-user>/<my-app>:<my-app-version>
@@ -94,7 +94,7 @@ Note the above uses `gcr.io/distroless/cc-debian10` as the runtime image which s
 
 ## Archive (Tarball, ZIP file, etc.)
 
-Since cross-compiling Swift for Linux is not [yet] supported on Mac or Windows, we need to use virtualization technologies like Docker to compile applications we are targeting to run on Linux.
+Since cross-compiling Swift for Linux is not (yet) supported on Mac or Windows, we need to use virtualization technologies like Docker to compile applications we are targeting to run on Linux.
 
 That said, this does not mean we must also package the applications as Docker images in order to deploy them. While using Docker images for deployment is convenient and popular, an application can also be packaged using a simple and lightweight archive format like tarball or ZIP file, then uploaded to the server where it can be extracted and run.
 
