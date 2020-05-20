@@ -28,8 +28,6 @@ Binary artifacts that could be deployed are be found under .build/x86_64-unknown
 
 - For best performance in Swift 5.2 or later, pass `-Xswiftc -cross-module-optimization` (this won't work in Swift versions before 5.2)
 
-- For versions prior to Swift 5.2, always build with `-Xswiftc -g` to get debugging symbols. Otherwise your stacktraces will lack most symbol names.
-
 - Integrate [`swift-backtrace`](https://github.com/swift-server/swift-backtrace) into your application to make sure backtraces are printed on crash. Backtraces do not work out-of-the-box on Linux, and this library helps to fill the gap. Eventually this will become a language feature and not require a discrete library.
 
 ## Testing 
