@@ -18,17 +18,15 @@ To build on Linux and create a Linux binary, use Docker. For example:
 
 The above command will run the build using the latest Swift 5.1 Docker image, utilizing bind mounts to the sources on your Mac. Apple publishes Docker images to Docker Hub.
 
-By default, SwiftPM will build a debug version of the application. Note that debug versions are not suitable for running in production as they are significantly slower. To build a release version of your app, with debug symbols, run `swift build -c release -Xswiftc -g`
+By default, SwiftPM will build a debug version of the application. Note that debug versions are not suitable for running in production as they are significantly slower. To build a release version of your app, run `swift build -c release`.
 
-Binary artifacts that could be deployed are be found under .build/x86_64-unknown-linux, or .build/x86_64-apple-macosx for macOS binaries.
+Binary artifacts that could be deployed are be found under .build/x86_64-unknown-linux, or .build/x86_64-apple-macosx for macOS binaries. SwiftPM can show you the full binary path using `swift build --show-bin-path -c release`.
 
 ### Building for production
 
 - Build production code in release mode by compiling with `swift build -c release`. Running code compiled in debug mode will hurt performance signficantly. 
 
 - For best performance in Swift 5.2 or later, pass `-Xswiftc -cross-module-optimization` (this won't work in Swift versions before 5.2)
-
-- For versions prior to Swift 5.2, always build with `-Xswiftc -g` to get debugging symbols. Otherwise your stacktraces will lack most symbol names.
 
 - Integrate [`swift-backtrace`](https://github.com/swift-server/swift-backtrace) into your application to make sure backtraces are printed on crash. Backtraces do not work out-of-the-box on Linux, and this library helps to fill the gap. Eventually this will become a language feature and not require a discrete library.
 
