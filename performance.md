@@ -108,6 +108,10 @@ Let's assume we have compiled the above code using `swift build -c release` into
 ```
 # Step 1: Record the stack frames with a 99 Hz sampling frequency
 sudo perf record -F 99 -g -- ./slow
+# Alternatively, to attach to an existing process use
+#     sudo perf record -F 99 -g -p PID_OF_SLOW
+# or if you don't know the pid, you can try (assuming your binary name is "slow")
+#     sudo perf record -F 99 -g -p $(pgrep slow)
 
 # Step 2: Export the recording into `out.perf`
 sudo perf script > out.perf
