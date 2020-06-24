@@ -1,10 +1,10 @@
 # Deploying to DigitalOcean
 
-This guide will walk you through deploying SwiftNIO's [example HTTP server](https://github.com/apple/swift-nio/tree/master/Sources/NIOHTTP1Server) to a [Droplet](https://www.digitalocean.com/products/droplets/). To follow this guide, you will need to have a [DigitalOcean](https://www.digitalocean.com) account with billing configured.
+This guide will walk you through setting up an Ubuntu virtual machine on a DigitalOcean [Droplet](https://www.digitalocean.com/products/droplets/). To follow this guide, you will need to have a [DigitalOcean](https://www.digitalocean.com) account with billing configured.
 
 ## Create Server
 
-Let's start by installing Swift on an Ubuntu server. Use the create menu to create a new Droplet.
+Use the create menu to create a new Droplet.
 
 ![Create Droplet](images/digital-ocean-create-droplet.png)
 
@@ -25,7 +25,7 @@ Once the new server is ready, hover over the Droplet's IP address and click copy
 Open your terminal and connect to the server as root using SSH.
 
 ```sh
-ssh root@your_server_ip
+ssh root@<server_ip>
 ```
 
 DigitalOcean has an in-depth guide for [initial server setup on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04). This guide will quickly cover the basics.
@@ -63,7 +63,7 @@ Finally, exit the current SSH session and login as the newly created user.
 
 ```sh
 exit
-ssh swift@your_server_ip
+ssh swift@<server_ip>
 ```
 
 Then enable HTTP ports.

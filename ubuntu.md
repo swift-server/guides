@@ -1,10 +1,13 @@
 # Deploying on Ubuntu
 
-Once you have your Ubuntu virtual machine ready, you can deploy your Swift app. The [packaging](package.md) guide provides an overview of avaialble deployment options. This guide takes you through each deployment option step-by-step for Ubuntu specifically. 
+Once you have your Ubuntu virtual machine ready, you can deploy your Swift app. This guide assumes you have a fresh install with a non-root user named `swift` with SSH configured. For information on setting this up, check out the platform guides:
 
-## Docker Deployment
+- [DigitalOcean](digital-ocean.md)
 
-Coming soon.
+The [packaging](packaging.md) guide provides an overview of available deployment options. This guide takes you through each deployment option step-by-step for Ubuntu specifically. These examples will deploy SwiftNIO's [example HTTP server](https://github.com/apple/swift-nio/tree/master/Sources/NIOHTTP1Server), but you can test with your own project.
+
+- [Binary Deployment](#binary-deployment)
+- [Source Deployment](#source-deployment)
 
 ## Binary Deployment
 
@@ -12,14 +15,14 @@ This section shows you how to build your app locally and deploy just the binary.
 
 ### Build Binaries
 
-The first step is to build your app locally. The easiest way to do this is with Docker. For this example, we'll be deploying SwiftNIO's demo HTTP server. Start by cloning project locally.
+The first step is to build your app locally. The easiest way to do this is with Docker. For this example, we'll be deploying SwiftNIO's demo HTTP server. Start by cloning the repository.
 
 ```sh
 git clone https://github.com/apple/swift-nio.git
 cd swift-nio
 ```
 
-Once inside the project folder, use the following command to build the app though Docker and copy all build arifacts into `.build/install`. Since this example is using Ubuntu 18.04, the `-bionic` Docker image is used. 
+Once inside the project folder, use the following command to build the app though Docker and copy all build arifacts into `.build/install`. Since this example will be deploying to Ubuntu 18.04, the `-bionic` Docker image is used to build.
 
 ```sh
 docker run --rm \
@@ -33,22 +36,24 @@ docker run --rm \
      cp -P /usr/lib/swift/linux/lib*so* .build/install/'
 ```
 
-After your project is built, use the following command to create an archive for easy transport to the server.
+Notice that Swift's shared libraries are being included. This is important since Swift is not ABI stable on Linux. This means Swift programs must run against the shared libraries they were compiled with. 
+
+After your project is built, use the following command to create an archive for easy transport to the server. 
 
 ```sh
 tar cvzf hello-world.tar.gz -C .build/install .
 ```
 
-Use the following command to copy the archive to the deploy server's home folder.
+Next, use `scp` to copy the archive to the deploy server's home folder.
 
 ```sh
-scp hello-world.tar.gz swift@159.89.90.76:~/
+scp hello-world.tar.gz swift@<server_ip>:~/
 ```
 
 Once the copy is complete, login to the deploy server.
 
 ```sh
-ssh swift@159.89.90.76
+ssh swift@<server_ip>
 ```
 
 Create a new folder to hold the app binaries and decompress the archive.
@@ -61,7 +66,7 @@ tar -xvf hello-world.tar.gz -C hello-world
 You can now start the executable. Supply the desired IP address and port. Since this example is binding to port `80`, sudo is required. 
 
 ```sh
-sudo ./hello-world/NIOHTTP1Server <ip_address> 80
+sudo ./hello-world/NIOHTTP1Server <server_ip> 80
 ```
 
 You may need to install additional system libraries like `libxml` or `tzdata` if your app uses Foundation. The system dependencies installed by Swift's slim docker images are a [good reference](https://github.com/apple/swift-docker/blob/master/5.2/ubuntu/18.04/slim/Dockerfile).
@@ -69,7 +74,7 @@ You may need to install additional system libraries like `libxml` or `tzdata` if
 Finally, visit your server's IP via browser or local terminal and you should see a response.
 
 ```
-$ curl http://159.89.90.76
+$ curl http://<server_ip>
 Hello world!
 ```
 
@@ -157,19 +162,19 @@ swift build
 Once the project has finished compiling, run it on your server's IP at port 80.
 
 ```sh
-sudo .build/debug/NIOHTTP1Server 157.245.244.228 80
+sudo .build/debug/NIOHTTP1Server <server_ip> 80
 ```
 
 If you used `swift build -c release`, then you need to run:
 
 ```sh
-sudo .build/release/NIOHTTP1Server 157.245.244.228 80
+sudo .build/release/NIOHTTP1Server <server_ip> 80
 ```
 
 Visit your server's IP via browser or local terminal and you should see a response.
 
 ```
-$ curl http://157.245.244.228
+$ curl http://<server_ip>
 Hello world!
 ```
 
