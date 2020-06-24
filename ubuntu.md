@@ -125,7 +125,7 @@ sudo mkdir /swift
 sudo mv swift-5.2-RELEASE-ubuntu18.04 /swift/5.2.0
 ```
 
-Add Swift to `/usr/bin` so it can be executed by `vapor` and `root`.
+Add Swift to `/usr/bin` so it can be executed by `swift` and `root`.
 
 ```sh
 sudo ln -s /swift/5.2.0/usr/bin/swift /usr/bin/swift
