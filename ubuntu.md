@@ -30,11 +30,13 @@ docker run --rm \
   -w /workspace \
   swift:5.2-bionic  \
   /bin/bash -cl ' \
-     swift build -c release && \
+     swift build && \
      rm -rf .build/install && mkdir -p .build/install && \
-     cp -P .build/release/NIOHTTP1Server .build/install/ && \
+     cp -P .build/debug/NIOHTTP1Server .build/install/ && \
      cp -P /usr/lib/swift/linux/lib*so* .build/install/'
 ```
+
+> Tip: If you are building this project for production, use `swift build -c release`, see [building for production](README.md#building-for-production) for more information.
 
 Notice that Swift's shared libraries are being included. This is important since Swift is not ABI stable on Linux. This means Swift programs must run against the shared libraries they were compiled with. 
 
@@ -155,7 +157,7 @@ cd swift-nio
 swift build
 ```
 
-> Tip: If you are building this project for production, use `swift build -c release`
+> Tip: If you are building this project for production, use `swift build -c release`, see [building for production](README.md#building-for-production) for more information.
 
 ### Run
 
