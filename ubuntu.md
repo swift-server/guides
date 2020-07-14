@@ -98,12 +98,12 @@ Install Swift's required dependencies.
 
 ```sh
 sudo apt update
-sudo apt install clang libicu-dev libatomic1 build-essential pkg-config
+sudo apt install clang libicu-dev build-essential pkg-config
 ```
 
 ### Download Toolchain
 
-This guide will install Swift 5.2.0. Visit the [Swift Downloads](https://swift.org/download/#releases) page for a link to latest release. Copy the download link for Ubuntu 18.04.
+This guide will install Swift 5.2. Visit the [Swift Downloads](https://swift.org/download/#releases) page for a link to latest release. Copy the download link for Ubuntu 18.04.
 
 ![Download Swift](images/swift-download-ubuntu-18-copy-link.png)
 
