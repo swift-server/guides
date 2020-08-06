@@ -65,10 +65,12 @@ mkdir hello-world
 tar -xvf hello-world.tar.gz -C hello-world
 ```
 
-You can now start the executable. Supply the desired IP address and port. Since this example is binding to port `80`, sudo is required. 
+You can now start the executable. Supply the desired IP address and port. Binding to port `80` requires sudo, so we use `8080` instead.
+
+[TODO]: <> (Link to Nginx guide once available for serving on port 80)
 
 ```sh
-sudo ./hello-world/NIOHTTP1Server <server_ip> 80
+sudo ./hello-world/NIOHTTP1Server <server_ip> 8080
 ```
 
 You may need to install additional system libraries like `libxml` or `tzdata` if your app uses Foundation. The system dependencies installed by Swift's slim docker images are a [good reference](https://github.com/apple/swift-docker/blob/master/5.2/ubuntu/18.04/slim/Dockerfile).
@@ -76,7 +78,7 @@ You may need to install additional system libraries like `libxml` or `tzdata` if
 Finally, visit your server's IP via browser or local terminal and you should see a response.
 
 ```
-$ curl http://<server_ip>
+$ curl http://<server_ip>:8080
 Hello world!
 ```
 
@@ -164,19 +166,19 @@ swift build
 Once the project has finished compiling, run it on your server's IP at port 80.
 
 ```sh
-sudo .build/debug/NIOHTTP1Server <server_ip> 80
+sudo .build/debug/NIOHTTP1Server <server_ip> 8080
 ```
 
 If you used `swift build -c release`, then you need to run:
 
 ```sh
-sudo .build/release/NIOHTTP1Server <server_ip> 80
+sudo .build/release/NIOHTTP1Server <server_ip> 8080
 ```
 
 Visit your server's IP via browser or local terminal and you should see a response.
 
 ```
-$ curl http://<server_ip>
+$ curl http://<server_ip>:8080
 Hello world!
 ```
 

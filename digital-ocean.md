@@ -47,12 +47,6 @@ Create a new user besides `root`. This guide calls the new user `swift`.
 adduser swift
 ```
 
-Allow the newly created user to use `sudo`.
-
-```sh
-usermod -aG sudo swift
-```
-
 Copy the root user's authorized SSH keys to the newly created user. This will allow you to SSH in as the new user.
 
 ```sh
@@ -66,10 +60,10 @@ exit
 ssh swift@<server_ip>
 ```
 
-Then enable HTTP ports.
+Then enable a non-root accessible HTTP port.
 
 ```sh
-sudo ufw allow http
+sudo ufw allow 8080
 ```
 
 Your DigitalOcean virtual machine is now ready. Continue using the [Ubuntu](ubuntu.md) guide. 
