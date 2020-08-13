@@ -1,6 +1,6 @@
 # Deploying on Ubuntu
 
-Once you have your Ubuntu virtual machine ready, you can deploy your Swift app. This guide assumes you have a fresh install with a non-root user named `swift` with SSH configured. For information on setting this up, check out the platform guides:
+Once you have your Ubuntu virtual machine ready, you can deploy your Swift app. This guide assumes you have a fresh install with a non-root user named `swift`. It also assumes both `root` and `swift` are accessible via SSH. For information on setting this up, check out the platform guides:
 
 - [DigitalOcean](digital-ocean.md)
 
@@ -70,7 +70,7 @@ You can now start the executable. Supply the desired IP address and port. Bindin
 [TODO]: <> (Link to Nginx guide once available for serving on port 80)
 
 ```sh
-sudo ./hello-world/NIOHTTP1Server <server_ip> 8080
+./hello-world/NIOHTTP1Server <server_ip> 8080
 ```
 
 You may need to install additional system libraries like `libxml` or `tzdata` if your app uses Foundation. The system dependencies installed by Swift's slim docker images are a [good reference](https://github.com/apple/swift-docker/blob/master/5.2/ubuntu/18.04/slim/Dockerfile).
@@ -92,7 +92,11 @@ This section shows you how to build and run your project on the deployment serve
 
 ## Install Swift
 
-Now that you've created a new Ubuntu server and logged in as a non-root user you can install Swift. 
+Now that you've created a new Ubuntu server you can install Swift. You must be logged in as `root` (or separate user with `sudo` access) to do this.
+
+```sh
+ssh root@<server_ip>
+```
 
 ### Swift Dependencies
 
@@ -151,7 +155,14 @@ sudo apt-get install zlib1g-dev
 
 ### Clone & Build
 
-Now clone the project and build it.
+Now that we're done installing things, we can switch to a non-root user to build and run our application.
+
+```sh
+su swift
+cd ~
+```
+
+Clone the project, then use `swift build` to compile it.
 
 ```sh
 git clone https://github.com/apple/swift-nio.git
@@ -163,16 +174,16 @@ swift build
 
 ### Run
 
-Once the project has finished compiling, run it on your server's IP at port 80.
+Once the project has finished compiling, run it on your server's IP at port `8080`. 
 
 ```sh
-sudo .build/debug/NIOHTTP1Server <server_ip> 8080
+.build/debug/NIOHTTP1Server <server_ip> 8080
 ```
 
 If you used `swift build -c release`, then you need to run:
 
 ```sh
-sudo .build/release/NIOHTTP1Server <server_ip> 8080
+.build/release/NIOHTTP1Server <server_ip> 8080
 ```
 
 Visit your server's IP via browser or local terminal and you should see a response.

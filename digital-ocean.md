@@ -39,31 +39,26 @@ ufw allow OpenSSH
 ufw enable
 ```
 
+Then enable a non-root accessible HTTP port.
+
+```sh
+ufw allow 8080
+```
+
 ### Add User
 
-Create a new user besides `root`. This guide calls the new user `swift`.
+Create a new user besides `root` that will be responsible for running your application. This guide uses a non-root user without access to `sudo` for added security.
+
+The following guides assume the user is named `swift`.
 
 ```sh
 adduser swift
 ```
 
-Copy the root user's authorized SSH keys to the newly created user. This will allow you to SSH in as the new user.
+Copy the root user's authorized SSH keys to the newly created user. This will allow you to use SSH (`scp`) as the new user.
 
 ```sh
 rsync --archive --chown=swift:swift ~/.ssh /home/swift
-```
-
-Finally, exit the current SSH session and login as the newly created user. 
-
-```sh
-exit
-ssh swift@<server_ip>
-```
-
-Then enable a non-root accessible HTTP port.
-
-```sh
-sudo ufw allow 8080
 ```
 
 Your DigitalOcean virtual machine is now ready. Continue using the [Ubuntu](ubuntu.md) guide. 
