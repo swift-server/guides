@@ -84,4 +84,6 @@ to keep `Tests/LinuxMain.swift` around but with with the following code to remin
 
 Once an application is built for production, it needs to be packaged for deployment. There are several strategies for packaging Swift applications for deployment, see the [Packaging Guide](packaging.md) for more information.
 
+A separate guide for [Ubuntu on DigitalOcean](digital-ocean.md) is also available.
+
 TODO: add guides for popular public clouds like AWS, GCP, Azure, Heroku, etc.
