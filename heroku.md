@@ -52,7 +52,7 @@ By default, Heroku deploys the **master** branch. Always make sure all changes a
 
 #### Connect with Heroku
 
-Connect your app with heroku (replace with your app's name).
+Connect your app with Heroku (replace with your app's name).
 
 ```bash
 $ heroku git:remote -a your-apps-name-here
@@ -60,7 +60,7 @@ $ heroku git:remote -a your-apps-name-here
 
 ### Set Stack
 
-As of 13 September 2018, Heroku’s default stack is Heroku 18, we need it to be 16 for vapor.
+As of 13 September 2018, Heroku’s default stack is Heroku 18, we need it to be 16 for swift projects.
 
 ```bash
 heroku stack:set heroku-16 -a your-apps-name-here
@@ -68,7 +68,7 @@ heroku stack:set heroku-16 -a your-apps-name-here
 
 ### Set Buildpack
 
-Set the buildpack to teach heroku how to deal with swift, the vapor-communnity buildpack has all the necessary setup for a swift project.
+Set the buildpack to teach Heroku how to deal with swift, the vapor-communnity buildpack isn't vapor specific, and has all the necessary setup for *any swift project*.
 
 
 ```bash
@@ -103,7 +103,7 @@ echo "web: NIOHTTP1Server 0.0.0.0 $PORT" > Procfile
 
 ### Commit changes
 
-We have now added the `.swift-version` file, and the `Procfile`, make sure these are committed into master or heroku will not find them.
+We have now added the `.swift-version` file, and the `Procfile`, make sure these are committed into master or Heroku will not find them.
 
 ### Deploying to Heroku
 
