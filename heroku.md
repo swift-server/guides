@@ -68,7 +68,7 @@ heroku stack:set heroku-16 -a your-apps-name-here
 
 ### Set Buildpack
 
-Set the buildpack to teach Heroku how to deal with swift, the vapor-communnity buildpack isn't vapor specific, and has all the necessary setup for *any swift project*.
+Set the buildpack to teach Heroku how to deal with swift, the vapor-communnity buildpack is a good buildpack for *any swift project*. It doesn't install vapor, and it doesn't have any vapor specific setup.
 
 
 ```bash
