@@ -22,7 +22,7 @@ See alternative install options here: [https://devcenter.heroku.com/articles/her
 
 ### Logging in
 
-once you've installed the cli, login with the following:
+Once you've installed the CLI, login with the following:
 
 ```bash
 heroku login
