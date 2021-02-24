@@ -4,7 +4,7 @@ This guide serves as guideline for library authors with regards to what [SwiftLo
 
 ## Guidelines for Libraries
 
-SwiftLog defines the following 7 log levels: 
+SwiftLog defines the following 7 log levels via the [`Logger.Level` enum](https://apple.github.io/swift-log/docs/current/Logging/Structs/Logger/Level.html), ordered from least to most severe: 
 
 * `trace`
 * `debug`
@@ -14,7 +14,7 @@ SwiftLog defines the following 7 log levels:
 * `error`
 * `critical`
 
-Out of those, only levels _lower than_ info (exclusive) are generally okay to be used by libraries.
+Out of those, only levels _less severe than_ info (exclusive) are generally okay to be used by libraries.
 In the following section we'll explore how to use them in practice.
 
 ### Recommended log levels
