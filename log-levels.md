@@ -85,6 +85,15 @@ Exceptions to the "avoid logging warnings" rule:
 
 While libraries are free to use whichever logging message style they choose, here are some best practices to follow if you want users of your libraries *love* the logs your library produces.
 
+Firstly, it is important to remember that both the message of a log statement as well as the metadata in [swift-log](https://github.com/apple/swift-log) are auto closures, which are only invoked if the logger has a log set such that it must emit a message for the message given. As such, messages e.g. logged at `trace` do not "materialize" their string and metadata representation unless they are actually needed:
+
+```swift
+    public func debug(_ message: @autoclosure () -> Logger.Message,
+                      metadata: @autoclosure () -> Logger.Metadata? = nil,
+                      source: @autoclosure () -> String? = nil,
+                      file: String = #file, function: String = #function, line: UInt = #line) {
+```
+
 And a minor yet important hint: avoid inserting newlines and other control characters into log statements (!). Many log aggregation systems assume that a single line in a logged output is specifically "one log statement" which can accidentally break if we log not sanitized, potentially multi-line, strings. This isn't a problem for _all_ log backends, e.g. some will automatically sanitize and form a JSON payload with `{message: "..."}` before emitting it to a backend service collecting the logs, but plain old stream (or file) loggers usually assume that one line equals one log statement - it also makes grepping through logs more reliable.
 
 #### Structured Logging (Semantic Logging)
