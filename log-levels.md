@@ -98,6 +98,37 @@ Firstly, it is important to remember that both the message of a log statement as
 
 And a minor yet important hint: avoid inserting newlines and other control characters into log statements (!). Many log aggregation systems assume that a single line in a logged output is specifically "one log statement" which can accidentally break if we log not sanitized, potentially multi-line, strings. This isn't a problem for _all_ log backends, e.g. some will automatically sanitize and form a JSON payload with `{message: "..."}` before emitting it to a backend service collecting the logs, but plain old stream (or file) loggers usually assume that one line equals one log statement - it also makes grepping through logs more reliable.
 
+#### Logging with Correlation IDs / Trace IDs
+
+A very common pattern is to log messages with some "correlation id". The best approach in general here is to use a `LoggingContext` from [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing) as then your library will be able to be traced and used with correlation contexts regardless what tracing system the end-user is using (e.g. open telemetry, zipkin, xray etc.) The concept though can be explained well with just a manually logged "requestID," which we'll explain below.
+
+Consider an HTTP client as an example of a library that has a lot of metadata about some request, perhas something like this:
+
+```swift
+log.trace("Received response", metadata: [
+   "id": "...",
+   "peer.host": "...",
+   "payload.size": "...",
+   "headers": "...",
+   "responseCode": "...",
+   "responseCode.text": "...",
+])
+```
+
+The exact metadata does not matter, they're just some placeholder in this example. What matters is that there's "a lot of it".
+
+Now, we would like to avoid logging _all_ this information in every single log statement. Instead, we are able to just repeatedly log the `"id"` metadata, like this:
+
+```swift
+// ... 
+log.trace("Somehing something...", metadata: ["id": "..."])
+log.trace("Finished streaming response", metadata: ["id": "..."])
+```
+
+Thanks to the correlation ID (or a tracing provided ID, in which case we'd log as `context.log.trace("...")` as the ID is propagated automatically), in each following log statement after the initial log statement we're able to correlate all those log statements and know that this `"Finished streaming response"` message was about a response with a `responseCode` that we're able to look up from the `"Received response"` log message.
+
+This pattern is somewhat advanced and may not always be the right approach, but consider it in high performance code where logging the same information repeatedly can be too costly.
+
 #### Structured Logging (Semantic Logging)
 
 Libraries may want to embrace the structured logging style. 
