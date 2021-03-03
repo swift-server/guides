@@ -41,6 +41,8 @@ Do also note that in situations when you decide to log an error, be mindful of e
 
 Logging `critical` logs is allowed for libraries, however as the name implies - only in the most critical situations. Most often this implies that the library will *stop functioning* after such log has been issued. End users are thought to expect that a logged critical error is _very_ important, and they may have set up their systems to page people in the middle of the night to investigate the production system _right now_ when such log statements are detected. So please be careful about logging these kinds of errors.
 
+Some libraries and situations may not be entirely clear with regards to what log level is "best" for them. In such situations, it sometimes is worth it to allow the end-users of the library to be able to configure the levels of specific groups of messages. You can see this in action in the Soto library [here](https://github.com/soto-project/soto-core/pull/423/files#diff-4a8ca7e54da5b22287900dd8cf6b47ded38a94194c1f0b544119030c81a2f238R649) where an `Options` object allows end users to configure the level at which requests are logged (`options.requestLogLevel`) which is then used as `log.log(self.options.requestLogLevel)`.
+
 #### Examples
 
 `trace` level logging:
@@ -100,7 +102,7 @@ And a minor yet important hint: avoid inserting newlines and other control chara
 
 Libraries may want to embrace the structured logging style. 
 
-It is a very useful pattern which makes consuming logs in automated systems, and through grepping and other means much easier and future proof.
+It is a fantastic pattern which makes consuming logs in automated systems, and through grepping and other means much easier and future proof.
 
 Consider the folowing not structured log statement:
 
