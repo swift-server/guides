@@ -31,7 +31,7 @@ This is in contrast with `debug` which some users _may_ choose to run with enabl
 
 As such, `debug` logging should not be overly noisy. It should provide a high value understanding of what is going on in the library for end users without diving deep into its internals. This is what `trace` is intended for.
 
-Use `warning` level sparingly. Whenever possible, try to rather emit errors to end users that are descriptive enough so they can inspect, log them and figure out the issue. Potentially they may then enable debug logging to find out more about the issue.
+Use `warning` level sparingly. Whenever possible, try to rather return or throw `Error` to end users that are descriptive enough so they can inspect, log them and figure out the issue. Potentially they may then enable debug logging to find out more about the issue.
 
 It is okey to log a `warning` "once", for example on system startup. This may include some one off "more secure configuration is available, try upgrading to it!" log statement upon a servers startup. You may also log warnings from background processes, which otherwise have no other means of informing the end user about some issue.
 
@@ -122,12 +122,25 @@ Now, we would like to avoid logging _all_ this information in every single log s
 ```swift
 // ... 
 log.trace("Somehing something...", metadata: ["id": "..."])
-log.trace("Finished streaming response", metadata: ["id": "..."])
+log.trace("Finished streaming response", metadata: ["id": "..."]) // good, the same ID is propagated
 ```
 
 Thanks to the correlation ID (or a tracing provided ID, in which case we'd log as `context.log.trace("...")` as the ID is propagated automatically), in each following log statement after the initial log statement we're able to correlate all those log statements and know that this `"Finished streaming response"` message was about a response with a `responseCode` that we're able to look up from the `"Received response"` log message.
 
 This pattern is somewhat advanced and may not always be the right approach, but consider it in high performance code where logging the same information repeatedly can be too costly.
+
+##### Things to avoid with Correlation ID logging
+
+When logging with correlation contexts make sure to never "drop the ID", it is easiest to get this right when using distributed tracing's LoggingContext since propagating it ensures the carrying of identifiers, however the same applies to any kind of correlation identifier.
+
+Specifically, avoid situations like these:
+
+```swift
+debug: conection established [connection-id: 7]
+debug: connection closed unexpectedly [error: foobar] // BAD, the connection-id was dropped
+```
+
+On the second line, we don't know which connection had the error since the `connection-id` was dropped. Make sure to audit your logging code to ensure all relevant log statements carry neccessary correlation identifiers.
 
 #### Structured Logging (Semantic Logging)
 
