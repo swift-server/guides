@@ -87,7 +87,7 @@ While libraries are free to use whichever logging message style they choose, her
 
 And a minor yet important hint: avoid inserting newlines and other control characters into log statements (!). Many log aggregation systems assume that a single line in a logged output is specifically "one log statement" which can accidentally break if we log not sanitized, potentially multi-line, strings. This isn't a problem for _all_ log backends, e.g. some will automatically sanitize and form a JSON payload with `{message: "..."}` before emitting it to a backend service collecting the logs, but plain old stream (or file) loggers usually assume that one line equals one log statement - it also makes grepping through logs more reliable.
 
-#### Structured Logging
+#### Structured Logging (Semantic Logging)
 
 Libraries may want to embrace the structured logging style. 
 
@@ -127,6 +127,13 @@ which can be formatted, depending on the logging backend, slightly differently o
 Also, since the message now does not contain all that much "human readable wording", it is less prone to randomly change from "Accepted" to "We have accepted" or vice versa which could break alerting systems which are set up to parse and alert on specific log messages.
 
 Needless to say, structured logs are very useful in combination with [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing)'s `LoggingContext`, which automatically populates the metadata with any present trace information. Thanks for this all logs made in response to some specific request will automatically carry the same TraceID.
+
+You can see more examples of structured logging on the following pages, and example implementations thereof:
+
+- https://tersesystems.com/blog/2020/05/26/why-i-wrote-a-logging-library/
+- https://cloud.google.com/logging/docs/structured-logging
+- https://stackify.com/what-is-structured-logging-and-why-developers-need-it/
+- https://kubernetes.io/blog/2020/09/04/kubernetes-1-19-introducing-structured-logs/
 
 ### Exceptions to the rules
 
