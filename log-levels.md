@@ -87,7 +87,7 @@ Exceptions to the "avoid logging warnings" rule:
 
 While libraries are free to use whichever logging message style they choose, here are some best practices to follow if you want users of your libraries *love* the logs your library produces.
 
-Firstly, it is important to remember that both the message of a log statement as well as the metadata in [swift-log](https://github.com/apple/swift-log) are auto closures, which are only invoked if the logger has a log set such that it must emit a message for the message given. As such, messages e.g. logged at `trace` do not "materialize" their string and metadata representation unless they are actually needed:
+Firstly, it is important to remember that both the message of a log statement as well as the metadata in [swift-log](https://github.com/apple/swift-log) are auto closures, which are only invoked if the logger has a log level set such that it must emit a message for the message given. As such, messages e.g. logged at `trace` do not "materialize" their string and metadata representation unless they are actually needed:
 
 ```swift
     public func debug(_ message: @autoclosure () -> Logger.Message,
