@@ -33,11 +33,11 @@ As such, `debug` logging should not be overly noisy. It should provide a high va
 
 Use `warning` level sparingly. Whenever possible, try to rather return or throw `Error` to end users that are descriptive enough so they can inspect, log them and figure out the issue. Potentially they may then enable debug logging to find out more about the issue.
 
-It is okey to log a `warning` "once", for example on system startup. This may include some one off "more secure configuration is available, try upgrading to it!" log statement upon a servers startup. You may also log warnings from background processes, which otherwise have no other means of informing the end user about some issue.
+It is okay to log a `warning` "once", for example on system startup. This may include some one off "more secure configuration is available, try upgrading to it!" log statement upon a servers startup. You may also log warnings from background processes, which otherwise have no other means of informing the end user about some issue.
 
-Logging on `error` level is similar to warnings: prefer to avoid doing so whenever possible. Instead offer errors or other mechanicms to users of your library such that they are informed about some error ocurring. For example, it is _not_ a good idea to log "connection failed" from an http client. Perhaps the end-user intended to make this request to a known offline server to _confirm_ it is offline? From their perspective this connection error is not a "real" error, it is just what they expected -- as such the http client should return or throw such error, but _not_ log it.
+Logging on `error` level is similar to warnings: prefer to avoid doing so whenever possible. Instead, report errors via your's library's API. For example, it is _not_ a good idea to log "connection failed" from an HTTP client. Perhaps the end-user intended to make this request to a known offline server to _confirm_ it is offline? From their perspective this connection error is not a "real" error, it is just what they expected -- as such the HTTP client should return or throw such an error, but _not_ log it.
 
-Do also note that in situations when you decide to log an error, be mindful of error rates. Will this error potentially be logged for every single operation while some network failure is happening? Some teams and companies have alerting systems set up based on the rate of errors logged in a system, and if it exceeds some threshold it may start calling and paging people in the middle of the night. When logging at error level, consider if the issue indeed is something that should be waking up people at night. You may also want to consider offering configuration in your library: "at what log level should this issue be reported?" This can come in handy in clustered systems which may log network failures themselfes, or depend on external systems detecting and reporting this.
+Do also note that in situations when you decide to log an error, be mindful of error rates. Will this error potentially be logged for every single operation while some network failure is happening? Some teams and companies have alerting systems set up based on the rate of errors logged in a system, and if it exceeds some threshold it may start calling and paging people in the middle of the night. When logging at error level, consider if the issue indeed is something that should be waking up people at night. You may also want to consider offering configuration in your library: "at what log level should this issue be reported?" This can come in handy in clustered systems which may log network failures thelselves, or depend on external systems detecting and reporting this.
 
 Logging `critical` logs is allowed for libraries, however as the name implies - only in the most critical situations. Most often this implies that the library will *stop functioning* after such log has been issued. End users are thought to expect that a logged critical error is _very_ important, and they may have set up their systems to page people in the middle of the night to investigate the production system _right now_ when such log statements are detected. So please be careful about logging these kinds of errors.
 
@@ -58,12 +58,14 @@ Some libraries and situations may not be entirely clear with regards to what log
 
 ### Log levels to avoid
 
-All these rules are only _general_ guidelines, and as such may have exceptions.Consider the following examples and rationale for why logging at high log levels by a library may not be desirable:
+All these rules are only _general_ guidelines, and as such may have exceptions. Consider the following examples and rationale for why logging at high log levels by a library may not be desirable:
 
 It is generally _not acceptable_ for a service client (e.g. an http client) to log an `error` when a request has failed. End-users may be using the client to probe if an endpoint is even responsive or not, and a failure to respond may be _expected_ behavior. Logging errors would only confuse and pollute their logs.
+
 Instead, libraries should either `throw`, or return an `Error` value that users of the library will have enough knowladge about if they should log or ignore it.
 
-It is even less acceptable for a library to log any successful operations. This leads to flodding server side systems, especially 
+It is even less acceptable for a library to log any successful operations. This leads to flodding server side systems, especially if e.g. one were to log every successfully handled request in a server side application this can easily flood and overwhelm logging systems when deployed to production where many end users are connected to the same server. Such issues are rarely found in development time, because of only a single peer requesting things from the service-under-test.
+
 
 #### Examples (of things to avoid)
 
@@ -77,17 +79,20 @@ Avoid using `error` or `warning`:
   - since the end-user is consuming these values, and has a mean of reporting (or swallowing) this error, the library should not log anything on their behalf.
 - never report as warnings which is merely an information, e.g. "weird header detected" may look like a good idea to log as a warning at first sight, however if the "weird header" is simply a misconfigured client (or just a "weird browser") you may be accidentally completely flooding an end-users logs with these "weird header" warnings (!)
   - only log warnings about actionable things which the end-user of your library can do something about. Using the the "weird header detected" log statement as an example: it would not be a good candidate to log as a warning because the server developer has no way to fix the users of their service to stop sending weird headers, so the server should not be logging this information as a warning.
+- It may be tempting to implement a "log as warning only once" technique for per-request style situations which may be almost important enough to be a warning, but should not be logged repeatedly after all. Authors may think of smart techniques to log a warning only once per "weird header discovered" and later on log the same issue on a different, e.g. trace level... Such techniques result in confusing hard to debug logs, where developers of a system unaware of the stateful nature of the logging would be left confused when trying to reproduce the issue. 
+  - For example, if a developer spots such warning in a productiuon system, they may attempt to reproduce it thinking that it only happens in the production environment. However if the logging systems' log level choice is _sateful_ they may actually be successfully reproducing the issue but never seeing it manifest. For this, and related performance reasons (as implementing "only once per X" implies growing storage and per-request additional checking requirements), it is not recommended to apply this pattern.
 
 Exceptions to the "avoid logging warnings" rule:
 
 - "background processes" such as tasks scheduled on a periodic timer, may not have any other means of communicating a failure or warning to the end user of the library other than through logging.
   - consider offering an API that would collect errors at runtime, and then you can avoid logging errors manually. This can often take the form of a customizable "on error" hook that the library accepts when constructing the scheduled job. If the handler is not customized, we can log the errors, but if it was, it again is up to the end-user of the library to decide what to do with them.
+- An exception to the "log a warning only once" rule is things which do not happen very frequently. For example, if a library is warning about an outdated license or something similar during _its initialization_ this isn't necessarily a bad idea. After all, we'd rather see this warning once during initialization rather during every request made to the library. Use your best judgement and consider the developers using your library when designing how often and where from to log such information.
 
 ### Suggested logging style
 
 While libraries are free to use whichever logging message style they choose, here are some best practices to follow if you want users of your libraries *love* the logs your library produces.
 
-Firstly, it is important to remember that both the message of a log statement as well as the metadata in [swift-log](https://github.com/apple/swift-log) are auto closures, which are only invoked if the logger has a log set such that it must emit a message for the message given. As such, messages e.g. logged at `trace` do not "materialize" their string and metadata representation unless they are actually needed:
+Firstly, it is important to remember that both the message of a log statement as well as the metadata in [swift-log](https://github.com/apple/swift-log) are [autoclosures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID543), which are only invoked if the logger has a log set such that it must emit a message for the message given. As such, messages e.g. logged at `trace` do not "materialize" their string and metadata representation unless they are actually needed:
 
 ```swift
     public func debug(_ message: @autoclosure () -> Logger.Message,
@@ -97,50 +102,6 @@ Firstly, it is important to remember that both the message of a log statement as
 ```
 
 And a minor yet important hint: avoid inserting newlines and other control characters into log statements (!). Many log aggregation systems assume that a single line in a logged output is specifically "one log statement" which can accidentally break if we log not sanitized, potentially multi-line, strings. This isn't a problem for _all_ log backends, e.g. some will automatically sanitize and form a JSON payload with `{message: "..."}` before emitting it to a backend service collecting the logs, but plain old stream (or file) loggers usually assume that one line equals one log statement - it also makes grepping through logs more reliable.
-
-#### Logging with Correlation IDs / Trace IDs
-
-A very common pattern is to log messages with some "correlation id". The best approach in general here is to use a `LoggingContext` from [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing) as then your library will be able to be traced and used with correlation contexts regardless what tracing system the end-user is using (e.g. open telemetry, zipkin, xray etc.) The concept though can be explained well with just a manually logged "requestID," which we'll explain below.
-
-Consider an HTTP client as an example of a library that has a lot of metadata about some request, perhas something like this:
-
-```swift
-log.trace("Received response", metadata: [
-   "id": "...",
-   "peer.host": "...",
-   "payload.size": "...",
-   "headers": "...",
-   "responseCode": "...",
-   "responseCode.text": "...",
-])
-```
-
-The exact metadata does not matter, they're just some placeholder in this example. What matters is that there's "a lot of it".
-
-Now, we would like to avoid logging _all_ this information in every single log statement. Instead, we are able to just repeatedly log the `"id"` metadata, like this:
-
-```swift
-// ... 
-log.trace("Somehing something...", metadata: ["id": "..."])
-log.trace("Finished streaming response", metadata: ["id": "..."]) // good, the same ID is propagated
-```
-
-Thanks to the correlation ID (or a tracing provided ID, in which case we'd log as `context.log.trace("...")` as the ID is propagated automatically), in each following log statement after the initial log statement we're able to correlate all those log statements and know that this `"Finished streaming response"` message was about a response with a `responseCode` that we're able to look up from the `"Received response"` log message.
-
-This pattern is somewhat advanced and may not always be the right approach, but consider it in high performance code where logging the same information repeatedly can be too costly.
-
-##### Things to avoid with Correlation ID logging
-
-When logging with correlation contexts make sure to never "drop the ID", it is easiest to get this right when using distributed tracing's LoggingContext since propagating it ensures the carrying of identifiers, however the same applies to any kind of correlation identifier.
-
-Specifically, avoid situations like these:
-
-```swift
-debug: conection established [connection-id: 7]
-debug: connection closed unexpectedly [error: foobar] // BAD, the connection-id was dropped
-```
-
-On the second line, we don't know which connection had the error since the `connection-id` was dropped. Make sure to audit your logging code to ensure all relevant log statements carry neccessary correlation identifiers.
 
 #### Structured Logging (Semantic Logging)
 
@@ -181,7 +142,7 @@ which can be formatted, depending on the logging backend, slightly differently o
 
 Also, since the message now does not contain all that much "human readable wording", it is less prone to randomly change from "Accepted" to "We have accepted" or vice versa which could break alerting systems which are set up to parse and alert on specific log messages.
 
-Needless to say, structured logs are very useful in combination with [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing)'s `LoggingContext`, which automatically populates the metadata with any present trace information. Thanks for this all logs made in response to some specific request will automatically carry the same TraceID.
+Structured logs are very useful in combination with [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing)'s `LoggingContext`, which automatically populates the metadata with any present trace information. Thanks for this all logs made in response to some specific request will automatically carry the same TraceID.
 
 You can see more examples of structured logging on the following pages, and example implementations thereof:
 
@@ -189,6 +150,52 @@ You can see more examples of structured logging on the following pages, and exam
 - https://cloud.google.com/logging/docs/structured-logging
 - https://stackify.com/what-is-structured-logging-and-why-developers-need-it/
 - https://kubernetes.io/blog/2020/09/04/kubernetes-1-19-introducing-structured-logs/
+
+#### Logging with Correlation IDs / Trace IDs
+
+A very common pattern is to log messages with some "correlation id". The best approach in general here is to use a `LoggingContext` from [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing) as then your library will be able to be traced and used with correlation contexts regardless what tracing system the end-user is using (e.g. open telemetry, zipkin, xray etc.) The concept though can be explained well with just a manually logged "requestID," which we'll explain below.
+
+Consider an HTTP client as an example of a library that has a lot of metadata about some request, perhaps something like this:
+
+```swift
+log.trace("Received response", metadata: [
+   "id": "...",
+   "peer.host": "...",
+   "payload.size": "...",
+   "headers": "...",
+   "responseCode": "...",
+   "responseCode.text": "...",
+])
+```
+
+The exact metadata does not matter, they're just some placeholder in this example. What matters is that there's "a lot of it".
+
+> Side note on metadata keys: While there is no single right way to structure metadata keys. We recommend thinking of them as-if JSON keys: camelCased and `.` separated identifiers. This allows many log analysis backends to treat them as such nested structure.
+
+Now, we would like to avoid logging _all_ this information in every single log statement. Instead, we are able to just repeatedly log the `"id"` metadata, like this:
+
+```swift
+// ... 
+log.trace("Somehing something...", metadata: ["id": "..."])
+log.trace("Finished streaming response", metadata: ["id": "..."]) // good, the same ID is propagated
+```
+
+Thanks to the correlation ID (or a tracing provided ID, in which case we'd log as `context.log.trace("...")` as the ID is propagated automatically), in each following log statement after the initial log statement we're able to correlate all those log statements and know that this `"Finished streaming response"` message was about a response with a `responseCode` that we're able to look up from the `"Received response"` log message.
+
+This pattern is somewhat advanced and may not always be the right approach, but consider it in high performance code where logging the same information repeatedly can be too costly.
+
+##### Things to avoid with Correlation ID logging
+
+When logging with correlation contexts make sure to never "drop the ID", it is easiest to get this right when using distributed tracing's LoggingContext since propagating it ensures the carrying of identifiers, however the same applies to any kind of correlation identifier.
+
+Specifically, avoid situations like these:
+
+```swift
+debug: conection established [connection-id: 7]
+debug: connection closed unexpectedly [error: foobar] // BAD, the connection-id was dropped
+```
+
+On the second line, we don't know which connection had the error since the `connection-id` was dropped. Make sure to audit your logging code to ensure all relevant log statements carry neccessary correlation identifiers.
 
 ### Exceptions to the rules
 
