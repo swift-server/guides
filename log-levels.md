@@ -85,7 +85,7 @@ Exceptions to the "avoid logging warnings" rule:
 
 - "background processes" such as tasks scheduled on a periodic timer, may not have any other means of communicating a failure or warning to the end user of the library other than through logging.
   - consider offering an API that would collect errors at runtime, and then you can avoid logging errors manually. This can often take the form of a customizable "on error" hook that the library accepts when constructing the scheduled job. If the handler is not customized, we can log the errors, but if it was, it again is up to the end-user of the library to decide what to do with them.
-- An exception to the "log a warning only once" rule is when things which do not happen very frequently. For example, if a library is warning about an outdated license or something similar during _its initialization_ this isn't necessarily a bad idea. After all, we'd rather see this warning once during initialization rather during every request made to the library. Use your best judgement and consider the developers using your library when designing how often and where from to log such information.
+- An exception to the "log a warning only once" rule is when things do not happen very frequently. For example, if a library is warning about an outdated license or something similar during _its initialization_ this isn't necessarily a bad idea. After all, we'd rather see this warning once during initialization rather during every request made to the library. Use your best judgement and consider the developers using your library when designing how often and where from to log such information.
 
 ### Suggested logging style
 
