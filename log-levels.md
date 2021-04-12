@@ -66,7 +66,6 @@ Instead, libraries should either `throw`, or return an `Error` value that users 
 
 It is even less acceptable for a library to log any successful operations. This leads to flodding server side systems, especially if e.g. one were to log every successfully handled request in a server side application this can easily flood and overwhelm logging systems when deployed to production where many end users are connected to the same server. Such issues are rarely found in development time, because of only a single peer requesting things from the service-under-test.
 
-
 #### Examples (of things to avoid)
 
 Avoid using `info` or any higher log level for:
@@ -92,7 +91,7 @@ Exceptions to the "avoid logging warnings" rule:
 
 While libraries are free to use whichever logging message style they choose, here are some best practices to follow if you want users of your libraries *love* the logs your library produces.
 
-Firstly, it is important to remember that both the message of a log statement as well as the metadata in [swift-log](https://github.com/apple/swift-log) are [autoclosures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID543), which are only invoked if the logger has a log set such that it must emit a message for the message given. As such, messages e.g. logged at `trace` do not "materialize" their string and metadata representation unless they are actually needed:
+Firstly, it is important to remember that both the message of a log statement as well as the metadata in [swift-log](https://github.com/apple/swift-log) are [autoclosures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID543), which are only invoked if the logger has a log level set such that it must emit a message for the message given. As such, messages e.g. logged at `trace` do not "materialize" their string and metadata representation unless they are actually needed:
 
 ```swift
     public func debug(_ message: @autoclosure () -> Logger.Message,
