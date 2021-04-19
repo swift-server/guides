@@ -1,6 +1,6 @@
 # Log Levels
 
-This guide serves as guidelines for library authors with regards to what [SwiftLog](https://github.com/apple/swift-log) log levels are apropriate for use in libraries, and in what siuations to use what level.
+This guide serves as guidelines for library authors with regards to what [SwiftLog](https://github.com/apple/swift-log) log levels are appropriate for use in libraries, and in what situations to use what level.
 
 ## Guidelines for Libraries
 
@@ -37,7 +37,7 @@ It is okay to log a `warning` "once", for example on system startup. This may in
 
 Logging on `error` level is similar to warnings: prefer to avoid doing so whenever possible. Instead, report errors via your library's API. For example, it is _not_ a good idea to log "connection failed" from an HTTP client. Perhaps the end-user intended to make this request to a known offline server to _confirm_ it is offline? From their perspective this connection error is not a "real" error, it is just what they expected -- as such the HTTP client should return or throw such an error, but _not_ log it.
 
-Do also note that in situations when you decide to log an error, be mindful of error rates. Will this error potentially be logged for every single operation while some network failure is happening? Some teams and companies have alerting systems set up based on the rate of errors logged in a system, and if it exceeds some threshold it may start calling and paging people in the middle of the night. When logging at error level, consider if the issue indeed is something that should be waking up people at night. You may also want to consider offering configuration in your library: "at what log level should this issue be reported?" This can come in handy in clustered systems which may log network failures thelselves, or depend on external systems detecting and reporting this.
+Do also note that in situations when you decide to log an error, be mindful of error rates. Will this error potentially be logged for every single operation while some network failure is happening? Some teams and companies have alerting systems set up based on the rate of errors logged in a system, and if it exceeds some threshold it may start calling and paging people in the middle of the night. When logging at error level, consider if the issue indeed is something that should be waking up people at night. You may also want to consider offering configuration in your library: "at what log level should this issue be reported?" This can come in handy in clustered systems which may log network failures themselves, or depend on external systems detecting and reporting this.
 
 Logging `critical` logs is allowed for libraries, however as the name implies - only in the most critical situations. Most often this implies that the library will *stop functioning* after such log has been issued. End users are thought to expect that a logged critical error is _very_ important, and they may have set up their systems to page people in the middle of the night to investigate the production system _right now_ when such log statements are detected. So please be careful about logging these kinds of errors.
 
@@ -62,7 +62,7 @@ All these rules are only _general_ guidelines, and as such may have exceptions. 
 
 It is generally _not acceptable_ for a service client (for example, an http client) to log an `error` when a request has failed. End-users may be using the client to probe if an endpoint is even responsive or not, and a failure to respond may be _expected_ behavior. Logging errors would only confuse and pollute their logs.
 
-Instead, libraries should either `throw`, or return an `Error` value that users of the library will have enough knowladge about if they should log or ignore it.
+Instead, libraries should either `throw`, or return an `Error` value that users of the library will have enough knowledge about if they should log or ignore it.
 
 It is even less acceptable for a library to log any successful operations. This leads to flooding server side systems, especially if, for example, one were to log every successfully handled request. In a server side application, this can easily flood and overwhelm logging systems when deployed to production where many end users are connected to the same server. Such issues are rarely found in development time, because of only a single peer requesting things from the service-under-test.
 
@@ -108,14 +108,14 @@ Libraries may want to embrace the structured logging style.
 
 It is a fantastic pattern which makes consuming logs in automated systems, and through grepping and other means much easier and future proof.
 
-Consider the folowing not structured log statement:
+Consider the following not structured log statement:
 
 ```swift
 // NOT structured logging style
 log.info("Accepted connection \(connection.id) from \(connection.peer), total: \(connections.count)")
 ```
 
-It contains 4 peieces of information:
+It contains 4 pieces of information:
 
 - We accepted a connection.
 - This is its string representation.
@@ -128,7 +128,7 @@ Instead, we can express the same information using the structured logging patter
 
 ```swift
 log.info("Accepted connection", metadata: [
-  "connection.id": "\(connnection.id)",
+  "connection.id": "\(connection.id)",
   "connection.peer": "\(connection.peer)",
   "connections.total": "\(connections.count)"
 ])
@@ -175,7 +175,7 @@ Now, we would like to avoid logging _all_ this information in every single log s
 
 ```swift
 // ... 
-log.trace("Somehing something...", metadata: ["id": "..."])
+log.trace("Something something...", metadata: ["id": "..."])
 log.trace("Finished streaming response", metadata: ["id": "..."]) // good, the same ID is propagated
 ```
 
@@ -190,11 +190,11 @@ When logging with correlation contexts make sure to never "drop the ID". It is e
 Specifically, avoid situations like these:
 
 ```swift
-debug: conection established [connection-id: 7]
+debug: connection established [connection-id: 7]
 debug: connection closed unexpectedly [error: foobar] // BAD, the connection-id was dropped
 ```
 
-On the second line, we don't know which connection had the error since the `connection-id` was dropped. Make sure to audit your logging code to ensure all relevant log statements carry neccessary correlation identifiers.
+On the second line, we don't know which connection had the error since the `connection-id` was dropped. Make sure to audit your logging code to ensure all relevant log statements carry necessary correlation identifiers.
 
 ### Exceptions to the rules
 
@@ -202,7 +202,7 @@ These are only general guidelines, and there always will be exceptions to these 
 
 Here are a few examples of situations when logging a message on a relatively high level might still be tolerable for a library.
 
-It's permittable for a library to log at `critical` level right before a _hard crash_, as a last resort of informing the log collection systems or end-user about additional information detailing the reason for the crash. This should be _in addition to_ the message from a `fatalError` and can lead to an improved diagnosis/debugging experience for end users.
+It's permissible for a library to log at `critical` level right before a _hard crash_, as a last resort of informing the log collection systems or end-user about additional information detailing the reason for the crash. This should be _in addition to_ the message from a `fatalError` and can lead to an improved diagnosis/debugging experience for end users.
 
 Sometimes libraries may be able to detect a harmful misconfiguration of the library. For example, selecting deprecated protocol versions. In such situations it may be useful to inform users in production by issuing a `warning`. However you should ensure that the warning is not logged repeatedly! For example, it is not acceptable for an HTTP client to log a warning on every single http request using some misconfiguration of the client. It _may_ be acceptable however for the client to log such warning, for example, _once_ at configuration time, if the library has a good way to do this.
 
