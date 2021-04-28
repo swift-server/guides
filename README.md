@@ -14,9 +14,13 @@ Swift is architecture specific, so running the build command on macOS will creat
 
 To build on Linux and create a Linux binary, use Docker. For example:
 
-`$ docker run -v $PWD:/code -w /code swift:5.1 swift build`
+`$ docker run -v "$PWD:/code" -w /code swift:5.3 swift build`
 
-The above command will run the build using the latest Swift 5.1 Docker image, utilizing bind mounts to the sources on your Mac. Apple publishes Docker images to Docker Hub.
+Note, if you want to run the Swift compiler for Intel CPUs on an Apple Silicon (M1) Mac, please add `--platform linux/amd64 -e QEMU_CPU=max` to the commandline. For example:
+
+`$ docker run -v "$PWD:/code" -w /code --platform linux/amd64 -e QEMU_CPU=max swift:5.3 swift build`
+
+The above commands will run the build using the latest Swift 5.3 Docker image, utilizing bind mounts to the sources on your Mac. Apple publishes Docker images to Docker Hub.
 
 By default, SwiftPM will build a debug version of the application. Note that debug versions are not suitable for running in production as they are significantly slower. To build a release version of your app, run `swift build -c release`.
 
@@ -38,9 +42,9 @@ SwiftPM is integrated with XCTest, Apple’s unit test framework. Test results w
 
 Like building on Linux, testing on Linux requires the use of Docker. For example:
 
-`$ docker run -v $PWD:/code -w /code swift:5.1 swift test`
+`$ docker run -v "$PWD:/code" -w /code swift:5.3 swift test`
 
-The above command will run the tests using the latest Swift 5.1 Docker image, utilizing bind mounts to the sources on your file system.
+The above command will run the tests using the latest Swift 5.3 Docker image, utilizing bind mounts to the sources on your file system.
 
 Swift supports architecture-specific code. By default, Foundation imports architecture-specific libraries like Darwin or Glibc. While developing on macOS, you may end up using APIs that are not available on Linux. Since you are most likely to deploy a cloud service on Linux, it is critical to test on Linux.
 
