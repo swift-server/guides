@@ -134,3 +134,7 @@ For some workloads putting serious pressure on the memory allocation subsystem, 
 It requires no changes to the code, but needs interposing with e.g. an environment variable before running your server.
 It is worth benchmarking with the default and with a custom memory allocator to see how much it helps for the specific workload.
 There are many `malloc` implementations out there, but a portable and well-performing one is [Microsofts mimalloc](https://github.com/microsoft/mimalloc). 
+
+Typically these are simply enabled by using LD_PRELOAD:
+
+`> LD_PRELOAD=/usr/bin/libmimalloc.so  myprogram`
