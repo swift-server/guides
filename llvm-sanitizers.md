@@ -6,3 +6,19 @@ For multithreaded and low-level unsafe interfacing server code, the ability to u
 There is a [blog post](https://swift.org/blog/tsan-support-on-linux/) outlining the usage of TSAN.
 
 The short story is to use the swiftc command line options `-sanitize=address` and `-santize=thread` to each respective tool.
+
+Also for Swift Package Manager projects you can use `--sanitize` at the command line, e.g.:
+
+`swift build --sanitize=address myProgram`
+
+or
+
+`swift build --sanitize=thread myProgram`
+
+and it can be used for the tests too:
+
+`swift test --sanitize=address myProgram`
+
+or
+
+`swift test --sanitize=thread myProgram`
