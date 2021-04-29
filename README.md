@@ -6,6 +6,10 @@ This guide is designed to help teams and individuals running Swift Server applic
 
 The guide is a community effort, and all are invited to share their tips and know-how.
 
+## Coding
+
+[There are a number of options for code editing.](ide-alternatives.md)
+
 ## Building
 
 Triggering the build action in Xcode or running `swift build` from the terminal will trigger the build.
