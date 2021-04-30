@@ -19,3 +19,5 @@ There are a few different options for doing the actual coding with completions e
 ## Support for other editors using LSP
 
 Additionally, the [SourceKit-LSP project](https://github.com/apple/sourcekit-lsp) has both an [extensive list of editors that supports it](https://github.com/apple/sourcekit-lsp/tree/main/Editors) and instructions on how to get completion in your favourite editor.
+
+_Do you know about another IDE or IDE plugin that is missing? Please submit a PR to add them here!_
