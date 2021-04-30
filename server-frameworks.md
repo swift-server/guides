@@ -22,8 +22,12 @@ It is not intended as a general package index, but rather as a non-exhaustive cu
 
 [Swift integrated span tracing for OpenTelemetry](https://github.com/slashmo/opentelemetry-swift)
 
-## Networking
+## Networking and Web frameworks
 [Swift NIO](https://github.com/apple/swift-nio)
+
+[Alamofire](https://github.com/Alamofire/Alamofire)
+
+[Vapor](https://github.com/vapor/vapor)
 
 ## Data format parsing and serialization/deserialization
 [Swift Protobuf parser](https://github.com/apple/swift-protobuf)
