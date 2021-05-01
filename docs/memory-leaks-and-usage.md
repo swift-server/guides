@@ -1,7 +1,7 @@
 # Debugging Memory Leaks and Usage
 
-Debugging memory leaks isn't straightforward on Linux, it's much easier done on macOS. The best tool is usually the Xcode's [Memory Graph Debugger](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/debugging_with_xcode/chapters/special_debugging_workflows.html#//apple_ref/doc/uid/TP40015022-CH9-DontLinkElementID_1).
-[Instruments](https://help.apple.com/instruments/mac/10.0/#/dev022f987b) and `leaks` can also be very useful. If you cannot reproduce the problem on macOS, not all is lost, find a few suggestions below. The fine folks at IBM have also put together a [guide on diagnosing memory leaks](https://developer.ibm.com/swift/2018/01/26/diagnosing-server-side-swift-memory-leaks/).
+There are many different tools for troubleshooting memory leaks both on Linux and macOS, each with different strengths and ease-of-use. One excellent tool is the Xcode's [Memory Graph Debugger](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/debugging_with_xcode/chapters/special_debugging_workflows.html#//apple_ref/doc/uid/TP40015022-CH9-DontLinkElementID_1).
+[Instruments](https://help.apple.com/instruments/mac/10.0/#/dev022f987b) and `leaks` can also be very useful. If you cannot run or reproduce the problem on macOS, there are a number of server-side alternatives below. 
 
 ## Example program
 
@@ -139,7 +139,9 @@ addr2line -e /tmp/test -a 0xc62ce -ipf | swift demangle
 0x00000000000c62ce: test.myFunctionDoingTheAllocation() -> () at crtstuff.c:?
 ```
 ## Debugging transient memory usage with `heaptrack`
-[Heaptrack](https://github.com/KDE/heaptrack) is useful for analyzing memory leaks/usage with less overhead than `valgrind` - but more importantly is also allows for analyzing transient memory usage which may significantly impact performance by putting to much pressure on the allocator. 
+[Heaptrack](https://github.com/KDE/heaptrack) is very useful for analyzing memory leaks/usage with less overhead than `valgrind` - but more importantly is also allows for analyzing transient memory usage which may significantly impact performance by putting to much pressure on the allocator. 
+
+In addition to command line acccess, there is a graphical front-end `heaptrack_gui`.
 
 A key feature is that it allows for diffing between two different runs of your application, making it fairly easy to troubleshoot differences in `malloc` behavior between e.g. feature branches and main.
 

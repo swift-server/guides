@@ -36,7 +36,7 @@ docker run --rm \
      cp -P /usr/lib/swift/linux/lib*so* .build/install/'
 ```
 
-> Tip: If you are building this project for production, use `swift build -c release`, see [building for production](README.md#building-for-production) for more information.
+> Tip: If you are building this project for production, use `swift build -c release`, see [building for production](building.md#building-for-production) for more information.
 
 Notice that Swift's shared libraries are being included. This is important since Swift is not ABI stable on Linux. This means Swift programs must run against the shared libraries they were compiled with. 
 
@@ -111,7 +111,7 @@ sudo apt install clang libicu-dev build-essential pkg-config
 
 This guide will install Swift 5.2. Visit the [Swift Downloads](https://swift.org/download/#releases) page for a link to latest release. Copy the download link for Ubuntu 18.04.
 
-![Download Swift](images/swift-download-ubuntu-18-copy-link.png)
+![Download Swift](../images/swift-download-ubuntu-18-copy-link.png)
 
 Download and decompress the Swift toolchain.
 
@@ -170,7 +170,7 @@ cd swift-nio
 swift build
 ```
 
-> Tip: If you are building this project for production, use `swift build -c release`, see [building for production](README.md#building-for-production) for more information.
+> Tip: If you are building this project for production, use `swift build -c release`, see [building for production](building.md#building-for-production) for more information.
 
 ### Run
 

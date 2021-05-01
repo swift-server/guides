@@ -1,4 +1,8 @@
-# IDE and Swift-aware editor alternatives
+## Setting up  
+
+The [supported platforms](https://swift.org/platform-support/) for running Swift on the server and the [ready-built tools packages](https://swift.org/download/) are all hosted on swift.org together with installation instructions. There you also can find the [language reference documentation](https://swift.org/documentation/).
+
+## IDE and Swift-aware editor alternatives
 
 There are a few different options for doing the actual coding with completions etc depending on what platform you are using, a non-exhastive list:
 
