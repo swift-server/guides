@@ -77,6 +77,7 @@ to keep `Tests/LinuxMain.swift` around but with with the following code to remin
 
 - [Memory leaks](memory-leaks-and-usage.md)
 - [Performance issues](performance.md)
+- [Multithreading issues and memory checks](llvm-sanitizers.md)
 
 ### Deploying a Debuggable Configuration (Production on Linux)
 
