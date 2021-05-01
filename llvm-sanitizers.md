@@ -9,16 +9,24 @@ The short story is to use the swiftc command line options `-sanitize=address` an
 
 Also for Swift Package Manager projects you can use `--sanitize` at the command line, e.g.:
 
-    swift build --sanitize=address
+```
+swift build --sanitize=address
+```
 
 or
 
-    swift build --sanitize=thread
+```
+swift build --sanitize=thread
+```
 
 and it can be used for the tests too:
 
-    swift test --sanitize=address
+```
+swift test --sanitize=address
+```
 
 or
 
-    swift test --sanitize=thread
+```
+swift test --sanitize=thread
+```
