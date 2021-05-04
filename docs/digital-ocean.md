@@ -6,11 +6,11 @@ This guide will walk you through setting up an Ubuntu virtual machine on a Digit
 
 Use the create menu to create a new Droplet.
 
-![Create Droplet](images/digital-ocean-create-droplet.png)
+![Create Droplet](../images/digital-ocean-create-droplet.png)
 
 Under distributions, select Ubuntu 18.04 LTS.
 
-![Ubuntu Distro](images/digital-ocean-distributions-ubuntu-18.png)
+![Ubuntu Distro](../images/digital-ocean-distributions-ubuntu-18.png)
 
 > Note: You may select any version of Linux that Swift supports. You can check which operating systems are officially supported on the [Swift Releases](https://swift.org/download/#releases) page.
 
@@ -18,7 +18,7 @@ After selecting the distribution, choose any plan and datacenter region you pref
 
 Once the new server is ready, hover over the Droplet's IP address and click copy.
 
-![Droplet List](images/digital-ocean-droplet-list.png)
+![Droplet List](../images/digital-ocean-droplet-list.png)
 
 ## Initial Setup
 
