@@ -105,11 +105,11 @@ And a minor yet important hint: avoid inserting newlines and other control chara
 
 #### Structured Logging (Semantic Logging)
 
-Libraries may want to embrace the structured logging style.
+Libraries may want to embrace the structured logging style, which renders logs in a [semi-structured data format](https://en.wikipedia.org/wiki/Semi-structured_data).
 
-It is a fantastic pattern which makes consuming logs in automated systems, and through grepping and other means much easier and future proof.
+It is a fantastic pattern which makes it easier and more reliable for automated code to process logged information.
 
-Consider the following not structured log statement:
+Consider the following "not structured" log statement:
 
 ```swift
 // NOT structured logging style
@@ -138,7 +138,7 @@ log.info("Accepted connection", metadata: [
 // <date> info [connection.id:?,connection.peer:?, connections.total:?] Accepted connection
 ```
 
-This structured log can be formatted, depending on the logging backend, slightly differently on various systems. Even in the simple string representation of such log, we'd be able to grep for `connections.total: 100` rather than having to guess the correct string.
+This structured log can be formatted, depending on the logging backend, slightly differently on various systems. Even in the simple string representation of such a log, we'd be able to grep for `connections.total: 100` rather than having to guess the correct string.
 
 Also, since the message now does not contain all that much "human readable wording", it is less prone to randomly change from "Accepted" to "We have accepted" or vice versa. This kind of change could break alerting systems which are set up to parse and alert on specific log messages.
 
