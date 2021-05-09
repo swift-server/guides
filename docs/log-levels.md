@@ -14,7 +14,8 @@ SwiftLog defines the following 7 log levels via the [`Logger.Level` enum](https:
 * `error`
 * `critical`
 
-Out of those, only levels _less severe than_ info (exclusive) are generally okay to be used by libraries.
+Out of those, only levels _less severe than_ info (exclusively) are generally okay to be used by libraries.
+
 In the following section we'll explore how to use them in practice.
 
 ### Recommended log levels
