@@ -22,7 +22,7 @@ In the following section we'll explore how to use them in practice.
 
 It is always fine for a library to log at `trace` and `debug` levels, and these two should be the primary levels any library is logging at.
 
-`trace` is the finest log level, and end-users of a library will not usually use it unless debugging very specific issues. You should consider it as a way for library developers to "log everything we could possibly need to diagnose a hard to reproduce bug." It is expected to take a toll on the performance of a system, and developers can assume trace level logging will not be used in production deployments, unless enabled specifically to locate some specific issue.
+`trace` is the finest log level, and end-users of a library will not usually use it unless debugging very specific issues. You should consider it as a way for library developers to "log everything we could possibly need to diagnose a hard to reproduce bug."  Unrestricted logging at `trace` level may take a toll on the performance of a system, and developers can assume trace level logging will not be used in production deployments, unless enabled specifically to locate some specific issue.
 
 This is in contrast with `debug` which some users _may_ choose to run enabled on their production systems.
 
@@ -30,9 +30,9 @@ This is in contrast with `debug` which some users _may_ choose to run enabled on
 >
 > Debug level logging should not completely undermine the performance of a production system.
 
-As such, `debug` logging should not be overly noisy. It should provide a high value understanding of what is going on in the library for end users without diving deep into its internals. This is what `trace` is intended for.
+As such, `debug` logging should provide a high value understanding of what is going on in the library for end users, using domain relevant language.  Logging at `debug` level should not be overly noisy or dive deep into internals; this is what `trace` is intended for.
 
-Use `warning` level sparingly. Whenever possible, try to rather return or throw `Error` to end users that are descriptive enough so they can inspect, log them and figure out the issue. Potentially they may then enable debug logging to find out more about the issue.
+Use `warning` level sparingly. Whenever possible, try to rather return or throw `Error` to end users that are descriptive enough so they can inspect, log them and figure out the issue. Potentially, they may then enable debug logging to find out more about the issue.
 
 It is okay to log a `warning` "once", for example on system startup. This may include some one off "more secure configuration is available, try upgrading to it!" log statement upon a server's startup. You may also log warnings from background processes, which otherwise have no other means of informing the end user about some issue.
 
@@ -50,7 +50,7 @@ Some libraries and situations may not be entirely clear with regards to what log
 
 - Could include various additional information about a request, such as various diagnostics about created data structures, the state of caches or similar, which are created in order to serve a request.
 - Could include "begin operation" and "end operation" logs.
-  - However, please consider using [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing) to instrument "begin" and "end" events, as tracing can be more efficient than logging. Logging may need to create string representations of the durations, log levels, and other fields.
+- However, please consider using [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing) to instrument "begin" and "end" events, as tracing can be more efficient than logging. Logging may need to create string representations of the durations, log levels, and other fields.
 
 `debug` level logging:
 
