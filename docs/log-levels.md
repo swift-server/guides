@@ -1,6 +1,6 @@
 # Log Levels
 
-This guide serves as guidelines for library authors with regards to what [SwiftLog](https://github.com/apple/swift-log) log levels are appropriate for use in libraries, and in what situations to use what level.
+This guide serves as guidelines for library authors with regards to what [SwiftLog](https://github.com/apple/swift-log) log levels are appropriate for use in libraries, and in which situations to use which level.
 
 ## Guidelines for Libraries
 
