@@ -49,13 +49,13 @@ Some libraries and situations may not be entirely clear with regards to what log
 `trace` level logging:
 
 - Could include various additional information about a request, such as various diagnostics about created data structures, the state of caches or similar, which are created in order to serve a request.
-- Could include "begin operation" and "end operation" logs.
+- Could include "begin operation" and "end operation" logging statements.
 - However, please consider using [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing) to instrument "begin" and "end" events, as tracing can be more efficient than logging. Logging may need to create string representations of the durations, log levels, and other fields.
 
 `debug` level logging:
 
 - May include a single log statement for opening a connection, accepting a request, and so on.
-- It can include a _high level_ overview of what is going on in the library. For example: "started work, processing step X, finished work X, result code 200".
+- It can include a _high level_ overview of control flow in an operation. For example: "started work, processing step X, made X decision, finished work X, result code 200".  This overview may consist of high cardinality structured data.
 
 ### Log levels to avoid
 
