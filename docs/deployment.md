@@ -1,9 +1,13 @@
 
 ## Deployment to Servers or Public Cloud
 
-Once an application is built for production, it needs to be packaged for deployment. There are several strategies for packaging Swift applications for deployment, see the [Packaging Guide](packaging.md) for more information.
+The following guides can help with the deployment to public cloud providers:
+* [DigitalOcean](digital-ocean.md)
+* [Heroku](heroku.md)
+* [Docker/K8](packaging.md#docker)
+* _Have a guides for other popular public clouds like AWS, GCP, Azure? Add it here!_
 
-A separate guide for [Ubuntu on DigitalOcean](digital-ocean.md) is also available.
+If you are delpoying to you own servers (e.g. bare metal, VMs or Docker) there are several strategies for packaging Swift applications for deployment, see the [Packaging Guide](packaging.md) for more information.
 
 ### Deploying a Debuggable Configuration (Production on Linux)
 
@@ -15,4 +19,4 @@ A separate guide for [Ubuntu on DigitalOcean](digital-ocean.md) is also availabl
 
 - If you don't have `--privileged` (or `--security-opt seccomp=unconfined`) containers (meaning you won't be able to use `lldb`) or you don't want to use lldb, consider using a library like [`swift-backtrace`](https://github.com/swift-server/swift-backtrace) to get stack traces on crash.
 
-_TODO: add guides for popular public clouds like AWS, GCP, Azure, Heroku, etc._
+
