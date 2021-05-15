@@ -10,11 +10,11 @@ Swift is architecture specific, so running the build command on macOS will creat
 
 To build on Linux and create a Linux binary, use Docker. For example:
 
-`$ docker run -v "$PWD:/code" -w /code swift:5.3 swift build`
+`$ docker run -v "$PWD:/code" -w /code swift:latest swift build`
 
 Note, if you want to run the Swift compiler for Intel CPUs on an Apple Silicon (M1) Mac, please add `--platform linux/amd64 -e QEMU_CPU=max` to the commandline. For example:
 
-`$ docker run -v "$PWD:/code" -w /code --platform linux/amd64 -e QEMU_CPU=max swift:5.3 swift build`
+`$ docker run -v "$PWD:/code" -w /code --platform linux/amd64 -e QEMU_CPU=max swift:latest swift build`
 
 The above commands will run the build using the latest Swift 5.3 Docker image, utilizing bind mounts to the sources on your Mac. Apple publishes Docker images to Docker Hub.
 
