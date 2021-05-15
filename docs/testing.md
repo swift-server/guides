@@ -12,7 +12,7 @@ The above command will run the tests using the latest Swift Docker image, utiliz
 
 Swift supports architecture-specific code. By default, Foundation imports architecture-specific libraries like Darwin or Glibc. While developing on macOS, you may end up using APIs that are not available on Linux. Since you are most likely to deploy a cloud service on Linux, it is critical to test on Linux.
 
-An historically important detail about testing for Linux is the `Tests/LinuxMain.swift` file. 
+A historically important detail about testing for Linux is the `Tests/LinuxMain.swift` file. 
 
 - In Swift versions 5.4 and newer tests are automaticlaly discovered on all platforms, no special file or flag needed.
 - In Swift versions >= 5.1 < 5.4, tests can be automaticlaly discovered on Linux using `swift test --enable-test-discovery` flag.
