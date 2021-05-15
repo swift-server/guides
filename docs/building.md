@@ -16,7 +16,7 @@ Note, if you want to run the Swift compiler for Intel CPUs on an Apple Silicon (
 
 `$ docker run -v "$PWD:/code" -w /code --platform linux/amd64 -e QEMU_CPU=max swift:latest swift build`
 
-The above commands will run the build using the latest Swift 5.3 Docker image, utilizing bind mounts to the sources on your Mac. Apple publishes Docker images to Docker Hub.
+The above commands will run the build using the latest Swift Docker image, utilizing bind mounts to the sources on your Mac. Apple publishes Docker images to Docker Hub.
 
 By default, SwiftPM will build a debug version of the application. Note that debug versions are not suitable for running in production as they are significantly slower. To build a release version of your app, run `swift build -c release`.
 
