@@ -1,6 +1,10 @@
-# Log Levels
+# Library guidelines: Log Levels
 
-This guide serves as guidelines for library authors with regards to what [SwiftLog](https://github.com/apple/swift-log) log levels are appropriate for use in libraries, and in which situations to use which level.
+This guide serves as guidelines for library authors with regard to what [SwiftLog](https://github.com/apple/swift-log) log levels are appropriate for use in libraries, and in what situations to use what level.
+
+Libraries need to be well-behaved across various use cases, and cannot assume a specific style of logging backend will be used with them. It is up to developers implementing specific applications and systems to configure those specifics of their application, and some may choose to log to disk, some to memory, or some may employ sophisticated log aggregators. In all those cases a library should behave "well", meaning that it should not overwhelm typical ("stdout") log backends by logging too much, alerting too much by over-using `error` level log statements etc.
+
+This is aimed for library authors with regards to what [SwiftLog](https://github.com/apple/swift-log) log levels are appropriate for use in libraries, and also general logging style hints.
 
 ## Guidelines for Libraries
 
@@ -42,7 +46,7 @@ Do also note that in situations when you decide to log an error, be mindful of e
 
 Logging `critical` logs is allowed for libraries, however as the name implies - only in the most critical situations. Most often this implies that the library will *stop functioning* after such log has been issued. End users are thought to expect that a logged critical error is _very_ important, and they may have set up their systems to page people in the middle of the night to investigate the production system _right now_ when such log statements are detected. So please be careful about logging these kinds of errors.
 
-Some libraries and situations may not be entirely clear with regards to what log level is "best" for them. In such situations, it sometimes is worth it to allow the end-users of the library to be able to configure the levels of specific groups of messages. You can see this in action in the Soto library [here](https://github.com/soto-project/soto-core/pull/423/files#diff-4a8ca7e54da5b22287900dd8cf6b47ded38a94194c1f0b544119030c81a2f238R649) where an `Options` object allows end users to configure the level at which requests are logged (`options.requestLogLevel`) which is then used as `log.log(self.options.requestLogLevel)`.
+Some libraries and situations may not be entirely clear with regard to what log level is "best" for them. In such situations, it sometimes is worth it to allow the end-users of the library to be able to configure the levels of specific groups of messages. You can see this in action in the Soto library [here](https://github.com/soto-project/soto-core/pull/423/files#diff-4a8ca7e54da5b22287900dd8cf6b47ded38a94194c1f0b544119030c81a2f238R649) where an `Options` object allows end users to configure the level at which requests are logged (`options.requestLogLevel`) which is then used as `log.log(self.options.requestLogLevel)`.
 
 #### Examples
 
@@ -50,12 +54,13 @@ Some libraries and situations may not be entirely clear with regards to what log
 
 - Could include various additional information about a request, such as various diagnostics about created data structures, the state of caches or similar, which are created in order to serve a request.
 - Could include "begin operation" and "end operation" logging statements.
-- However, please consider using [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing) to instrument "begin" and "end" events, as tracing can be more efficient than logging. Logging may need to create string representations of the durations, log levels, and other fields.
 
 `debug` level logging:
 
 - May include a single log statement for opening a connection, accepting a request, and so on.
 - It can include a _high level_ overview of control flow in an operation. For example: "started work, processing step X, made X decision, finished work X, result code 200".  This overview may consist of high cardinality structured data.
+
+> You may also want to consider using [swift-distributed-tracing](https://github.com/apple/swift-distributed-tracing) to instrument "begin" and "end" events, as tracing may give you additional insights into your system behavior you would have missed with just manually analysing log statements.
 
 ### Log levels to avoid
 
