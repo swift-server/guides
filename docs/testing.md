@@ -26,4 +26,4 @@ An historically important detail about testing for Linux is the `Tests/LinuxMain
     * Run your test suite with TSan (thread sanitizer): `swift test --sanitize=thread`
     * Run your test suite with ASan (address sanitizer): `swift test --sanitize=address` and `swift test --sanitize=address -c release -Xswiftc -enable-testing`
 
-- Generally, whilst testing, you may want to build using `swift build --sanitize=thread`. The binary will run slower and is not suitable for production, but you'll see many many threading issues before you deploy your software. Often threading issues are really hard to debug and reproduce and also cause random problems. TSan helps catch them early.
+- Generally, whilst testing, you may want to build using `swift build --sanitize=thread`. The binary will run slower and is not suitable for production, but you might be able to catch threading issues early - before you deploy your software. Often threading issues are really hard to debug and reproduce and also cause random problems. TSan helps catch them early.
