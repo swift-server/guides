@@ -203,7 +203,7 @@ These are only general guidelines, and there always will be exceptions to these 
 
 Here are a few examples of situations when logging a message on a relatively high level might still be tolerable for a library.
 
-It's permissible for a library to log at `critical` level right before a _hard crash_ or assertion failure, as a last resort of informing the log collection systems or end-user about additional information detailing the reason for the crash. This should be _in addition to_ the message from a `fatalError` and can lead to an improved diagnosis/debugging experience for end users.
+It's permissible for a library to log at `critical` level right before a _hard_ crash of the process, as a last resort of informing the log collection systems or end-user about additional information detailing the reason for the crash. This should be _in addition to_ the message from a `fatalError` and can lead to an improved diagnosis/debugging experience for end users.
 
 Sometimes libraries may be able to detect a harmful misconfiguration of the library. For example, selecting deprecated protocol versions. In such situations it may be useful to inform users in production by issuing a `warning`. However you should ensure that the warning is not logged repeatedly! For example, it is not acceptable for an HTTP client to log a warning on every single http request using some misconfiguration of the client. It _may_ be acceptable however for the client to log such a warning, for example, _once_ at configuration time, if the library has a good way to do this.
 
