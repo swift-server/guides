@@ -1,6 +1,6 @@
 # Testing 
 
-SwiftPM is integrated with [XCTest, Apple’s unit test framework](https://developer.apple.com/documentation/xctest). Running `swift test` from the terminal, or triggering the test action in Xcode, will run all of your XCTest test cases. Test results will be displayed in Xcode or printed out to the terminal.
+SwiftPM is integrated with [XCTest, Apple’s unit test framework](https://developer.apple.com/documentation/xctest). Running `swift test` from the terminal, or triggering the test action in your IDE (Xcode or similar), will run all of your XCTest test cases. Test results will be displayed in your IDE or printed out to the terminal.
 
 A convenient way to test on Linux is using Docker. For example:
 
