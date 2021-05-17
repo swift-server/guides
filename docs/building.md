@@ -1,30 +1,40 @@
 # Build system
 
-The recommended way of managing the builds for server applications is to use the [Swift Package Manager](https://swift.org/package-manager/), it provides a cross-platform foundation for building Swift code and works nicely for having one code base that can be edited as well as run on many Swift platforms
+The recommended way to build server applications is with [Swift Package Manager](https://swift.org/package-manager/). SwiftPM provides a cross-platform foundation for building Swift code and works nicely for having one code base that can be edited as well as run on many Swift platforms.
 
 ## Building
+SwiftPM works from the command line and is also integrated within Xcode.
 
-Running `swift build` from the terminal will trigger the build (or triggering the build action in Xcode).
+You can build your code either by running `swift build` from the terminal, or by triggering the build action in Xcode.
 
-Swift is architecture specific, so running the build command on macOS will create a macOS binary. Building on macOS is useful for development and for taking advantage of the great tooling that comes with Xcode. However, most server applications are designed to run on Linux.
+### Docker Usage
+Swift binaries are architecture-specific, so running the build command on macOS will create a macOS binary, and similarly running the command on Linux will create a Linux binary.
 
-To build on Linux and create a Linux binary, use Docker. For example:
+Many Swift developers use macOS for development, which enables taking advantage of the great tooling that comes with Xcode. However, most server applications are designed to run on Linux.
+
+If you are developing on macOS, Docker is a useful tool for building on Linux and creating Linux binaries. Apple publishes official Swift Docker images to [Docker Hub](https://hub.docker.com/_/swift).
+
+For example, to build your application using the latest Swift Docker image:
 
 `$ docker run -v "$PWD:/code" -w /code swift:latest swift build`
 
-Note, if you want to run the Swift compiler for Intel CPUs on an Apple Silicon (M1) Mac, please add `--platform linux/amd64 -e QEMU_CPU=max` to the commandline. For example:
+Note, if you want to run the Swift compiler for Intel CPUs on an Apple Silicon (M1) Mac, please add `--platform linux/amd64 -e QEMU_CPU=max` to the command line. For example:
 
 `$ docker run -v "$PWD:/code" -w /code --platform linux/amd64 -e QEMU_CPU=max swift:latest swift build`
 
-The above commands will run the build using the latest Swift Docker image, utilizing bind mounts to the sources on your Mac. Apple publishes Docker images to Docker Hub.
+The above command will run the build using the latest Swift Docker image, utilizing bind mounts to the sources on your Mac. 
 
+### Debug vs. Release Mode
 By default, SwiftPM will build a debug version of the application. Note that debug versions are not suitable for running in production as they are significantly slower. To build a release version of your app, run `swift build -c release`.
 
-Binary artifacts that could be deployed are be found under .build/x86_64-unknown-linux, or .build/x86_64-apple-macosx for macOS binaries. SwiftPM can show you the full binary path using `swift build --show-bin-path -c release`.
+### Locating Binaries
+Binary artifacts that can be deployed are found under `.build/x86_64-unknown-linux` on Linux, and `.build/x86_64-apple-macosx` on macOS. 
+
+SwiftPM can show you the full binary path using `swift build --show-bin-path -c release`.
 
 ### Building for production
 
-- Build production code in release mode by compiling with `swift build -c release`. Running code compiled in debug mode will hurt performance signficantly. 
+- Build production code in release mode by compiling with `swift build -c release`. Running code compiled in debug mode will hurt performance significantly. 
 
 - For best performance in Swift 5.2 or later, pass `-Xswiftc -cross-module-optimization` (this won't work in Swift versions before 5.2)
 
