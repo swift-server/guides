@@ -48,14 +48,14 @@ Wait for instance to launch. When it is ready it will show as "running" under "I
 
 ![Wait for instance launch and view details](images/aws/ec2-list.png)
 
-Connect to instance. Using the keypair that you used or created in the launch step and the IP in the previous step, run ssh/
+Connect to instance. Using the keypair that you used or created in the launch step and the IP in the previous step, run ssh. Be sure to use the `-A` option with ssh so that in a future step we will be able to use the same key to connect to a second instance.
 
 ![Connect to instance](images/aws/ssh-0.png)
 
 Run the following command in the SSH terminal. Note that there may be a more up to date version of the swift toolchain. Check https://swift.org/download/#releases for the latest available toolchain url for Amazon Linux 2.
 
 ```
-SwiftToolchainUrl="https://swift.org/builds/swift-5.2.4-release/amazonlinux2/swift-5.2.4-RELEASE/swift-5.2.4-RELEASE-amazonlinux2.tar.gz"
+SwiftToolchainUrl="https://swift.org/builds/swift-5.4.1-release/amazonlinux2/swift-5.4.1-RELEASE/swift-5.4.1-RELEASE-amazonlinux2.tar.gz"
 sudo yum install ruby binutils gcc git glibc-static gzip libbsd libcurl libedit libicu libsqlite libstdc++-static libuuid libxml2 tar tzdata ruby -y
 cd $(mktemp -d)
 wget ${SwiftToolchainUrl} -O swift.tar.gz
@@ -66,7 +66,31 @@ Finally, check that Swift is correctly installed by running the Swift REPL: `swi
 
 ![Invoke REPL](images/aws/repl.png)
 
-From here, options are endless and will depend on your application of Swift. If you wish to run a web service be sure to open the Security Group to the correct port and from the correct source. When you are done testing Swift, shut down the instance to avoid paying for unneeded compute. From the EC2 dashboard, select the instance, select "Actions" from the menu, then select "Instance state" and then finally "terminate".
+Let's now download and build an test application. We will use the `--static-swift-stdlib` option so that it can be deployed to a different server without the Swift toolchain installed.
+
+```
+git clone https://github.com/apple/swift-nio.git
+cd swift-nio
+swift build -v --static-swift-stdlib -c release
+```
+
+Using the same steps as above, launch a second instance (but don't run any of the bash commands above!). Be sure to use the same SSH keypair.
+
+From within the AWS management console, navigate to the EC2 service and find the instance that you just launched. Click on the instance to see the details, and find the internal IP. In my example, the internal IP is `172.31.3.29`
+
+From the original build instance, copy the binary to the new server instance:
+```scp .build/release/NIOHTTP1Server ec2-user@172.31.3.29```
+
+Now connect to the new instance:
+```ssh ec2-user@172.31.3.29```
+
+From within the new instance, test the Swift binary:
+```
+NIOHTTP1Server localhost 8080 &
+curl localhost:8080
+```
+
+From here, options are endless and will depend on your application of Swift. If you wish to run a web service be sure to open the Security Group to the correct port and from the correct source. When you are done testing Swift, shut down the instance to avoid paying for unneeded compute. From the EC2 dashboard, select both instances, select "Actions" from the menu, then select "Instance state" and then finally "terminate".
 
 ![Terminate Instance](images/aws/terminate.png)
 
