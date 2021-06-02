@@ -66,7 +66,7 @@ Finally, check that Swift is correctly installed by running the Swift REPL: `swi
 
 ![Invoke REPL](../images/aws/repl.png)
 
-Let's now download and build an test application. We will use the `--static-swift-stdlib` option so that it can be deployed to a different server without the Swift toolchain installed.
+Let's now download and build an test application. We will use the `--static-swift-stdlib` option so that it can be deployed to a different server without the Swift toolchain installed. These examples will deploy SwiftNIO's [example HTTP server](https://github.com/apple/swift-nio/tree/master/Sources/NIOHTTP1Server), but you can test with your own project.
 
 ```
 git clone https://github.com/apple/swift-nio.git

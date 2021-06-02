@@ -2,9 +2,9 @@
 ## Deployment to Servers or Public Cloud
 
 The following guides can help with the deployment to public cloud providers:
+* [AWS](aws.md)
 * [DigitalOcean](digital-ocean.md)
 * [Heroku](heroku.md)
-* [AWS](aws.md)
 * [Docker/K8](packaging.md#docker)
 * _Have a guides for other popular public clouds like GCP, Azure? Add it here!_
 
