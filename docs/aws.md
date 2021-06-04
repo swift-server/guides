@@ -20,7 +20,7 @@ Choose an Amazon Machine Image (AMI). In this case the guide is assuming that we
 
 ![Choose AMI](../images/aws/launch-1.png)
 
-Choose an instance type. Larger instances types will have more memory and CPU, but will be more expensive. To experiment is it frugal to choose a smaller instance type. In this case I have a `t2.micro` instance type selected.
+Choose an instance type. Larger instances types will have more memory and CPU, but will be more expensive. A smaller instance type will be sufficient to experiment. In this case I have a `t2.micro` instance type selected.
 
 ![Choose Instance type](../images/aws/launch-2.png)
 
@@ -93,5 +93,4 @@ curl localhost:8080
 From here, options are endless and will depend on your application of Swift. If you wish to run a web service be sure to open the Security Group to the correct port and from the correct source. When you are done testing Swift, shut down the instance to avoid paying for unneeded compute. From the EC2 dashboard, select both instances, select "Actions" from the menu, then select "Instance state" and then finally "terminate".
 
 ![Terminate Instance](../images/aws/terminate.png)
-
 
