@@ -52,6 +52,10 @@ Connect to instance. Using the keypair that you used or created in the launch st
 
 ![Connect to instance](../images/aws/ssh-0.png)
 
+We have two options to compile the binary: either directly on the instance or using Docker. We will go through both options here.
+
+## Compile on instance
+
 Run the following command in the SSH terminal. Note that there may be a more up to date version of the swift toolchain. Check https://swift.org/download/#releases for the latest available toolchain url for Amazon Linux 2.
 
 ```
@@ -74,6 +78,25 @@ cd swift-nio
 swift build -v --static-swift-stdlib -c release
 ```
 
+## Compile on Docker
+
+Ensure that Docker and git are installed on the instance:
+
+```
+sudo yum install docker git
+sudo usermod -a -G docker ec2-user
+sudo systemctl start docker
+```
+
+You may have to log out and log back in to be able to use Docker. Check by running `docker ps`, and ensure that it runs without errors.
+
+Download and compile SwiftNIO's [example HTTP server](https://github.com/apple/swift-nio/tree/master/Sources/NIOHTTP1Server): 
+
+```
+docker run --rm  -v "$PWD:/workspace"  -w /workspace swift:5.4-amazonlinux2   /bin/bash -cl ' \
+     swift build -v --static-swift-stdlib -c release
+```
+## Test binary
 Using the same steps as above, launch a second instance (but don't run any of the bash commands above!). Be sure to use the same SSH keypair.
 
 From within the AWS management console, navigate to the EC2 service and find the instance that you just launched. Click on the instance to see the details, and find the internal IP. In my example, the internal IP is `172.31.3.29`
