@@ -7,7 +7,6 @@ The [supported platforms](https://swift.org/platform-support/) for running Swift
 A number of editors you may already be familiar with have support for writing Swift code. Here we provide a non-exhaustive list of such editors and relevant plugins/extensions, sorted alphabetically.
 
 * [Atom IDE support](https://atom.io/packages/ide-swift)
-    * [Atomic Blonde](https://atom.io/packages/atomic-blonde) a SourceKit based syntax highlighter for Atom.
 
 * [CLion](https://www.jetbrains.com/help/clion/swift.html)
 
