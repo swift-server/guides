@@ -78,7 +78,7 @@ cd swift-nio
 swift build -v --static-swift-stdlib -c release
 ```
 
-## Compile on Docker
+## Compile with Docker
 
 Ensure that Docker and git are installed on the instance:
 
@@ -116,4 +116,3 @@ curl localhost:8080
 From here, options are endless and will depend on your application of Swift. If you wish to run a web service be sure to open the Security Group to the correct port and from the correct source. When you are done testing Swift, shut down the instance to avoid paying for unneeded compute. From the EC2 dashboard, select both instances, select "Actions" from the menu, then select "Instance state" and then finally "terminate".
 
 ![Terminate Instance](../images/aws/terminate.png)
-
