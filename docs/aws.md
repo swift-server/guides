@@ -55,7 +55,12 @@ Connect to instance. Using the keypair that you used or created in the launch st
 We have two options to compile the binary: either directly on the instance or using Docker. We will go through both options here.
 
 ## Compile on instance
+There are two alternative ways to compile code on the instance, either by:
 
+- [downloading and using the toolchain directly on the instance](#compile-using-a-downloaded-toolchain),
+- or by [using docker, and compiling inside a docker container](#compile-with-docker)
+
+### Compile using a downloaded toolchain
 Run the following command in the SSH terminal. Note that there may be a more up to date version of the swift toolchain. Check https://swift.org/download/#releases for the latest available toolchain url for Amazon Linux 2.
 
 ```
