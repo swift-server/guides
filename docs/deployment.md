@@ -2,10 +2,11 @@
 ## Deployment to Servers or Public Cloud
 
 The following guides can help with the deployment to public cloud providers:
+* [AWS](aws.md)
 * [DigitalOcean](digital-ocean.md)
 * [Heroku](heroku.md)
-* [Docker/K8](packaging.md#docker)
-* _Have a guides for other popular public clouds like AWS, GCP, Azure? Add it here!_
+* [Kubernetes & Docker](packaging.md#docker)
+* _Have a guides for other popular public clouds like GCP, Azure? Add it here!_
 
 If you are deploying to you own servers (e.g. bare metal, VMs or Docker) there are several strategies for packaging Swift applications for deployment, see the [Packaging Guide](packaging.md) for more information.
 
@@ -18,4 +19,3 @@ If you are deploying to you own servers (e.g. bare metal, VMs or Docker) there a
     instead of `./my-program` to get something something akin to a 'crash report' on crash.
 
 - If you don't have `--privileged` (or `--security-opt seccomp=unconfined`) containers (meaning you won't be able to use `lldb`) or you don't want to use lldb, consider using a library like [`swift-backtrace`](https://github.com/swift-server/swift-backtrace) to get stack traces on crash.
-
