@@ -58,7 +58,7 @@ libc_path=$(readlink -e /lib64/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6)
 perf probe --del 'probe_libc:*'
 
 # installs a probe on `malloc`, `calloc`, and `posix_memalign`
-perf probe -x "$libc_path --add malloc --add calloc --add posix_memalign
+perf probe -x "$libc_path" --add malloc --add calloc --add posix_memalign
 ```
 
 The result (hopefully) looks somewhat like this:
