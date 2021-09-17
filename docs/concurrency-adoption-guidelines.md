@@ -56,7 +56,7 @@ Further helpers exist for `EventLoopGroup`, `Channel`, `ChannelOutboundInvoker` 
 
 In the future we will see fully checked Swift concurrency. The language features to support this are the `Sendable` protocol and the `@Sendable` keyword for closures. Since sendable checking will break existing Swift code, a new major Swift version is required.
 
-To easy the transition to fully checked Swift code, it is possible to annotate your APIs with the Sendable protocol today.
+To ease the transition to fully checked Swift code, it is possible to annotate your APIs with the Sendable protocol today.
 
 You can start adopting Sendable and getting appropriate warnings in Swift 5.5 already by passing the `-warn-concurrency` flag, you can do so in SwiftPM for the entire project like so:
 
@@ -83,7 +83,7 @@ It may be difficult for a library to maintain a “pre Swift 6” version along 
 struct Container<Value: Sendable>: Sendable { ... }
 ```
 
-Here, the Value type must be marked Sendable for Swift 6’s concurrency checks to be able property work with such container. However, since the Sendable type does not exist in Swift prior to Swift 5.5, it would be difficult to maintain a library that supports both Swift 5.4+ as well as Swift 6.
+Here, the `Value` type must be marked `Sendable` for Swift 6’s concurrency checks to work properly with such container. However, since the Sendable type does not exist in Swift prior to Swift 5.5, it would be difficult to maintain a library that supports both Swift 5.4+ as well as Swift 6.
 
 In such situations, it may be helpful to utilize the following trick to be able to share the same Container declaration between both Swift versions of the library:
 
@@ -103,7 +103,7 @@ The newly introduced TaskLocal Values API ([SE-0311][SE-0311]) allows for implic
 
 We are working on adjusting Swift Log to become powerful enough to automatically pick up and log specific task local values. This change will be introduced in a source compatible way. 
 
-For now libraries should continue using logger metadata, but we expect a log of the manually passing metadata to each log statement can be replaced in the future with setting task local values. 
+For now libraries should continue using logger metadata, but we expect that a lot of the manually passing metadata to each log statement can be replaced in the future with setting task local values. 
 
 ### Preparing for the concept of Deadlines
 
@@ -115,7 +115,7 @@ Once Swift Concurrency gains deadline support, they will manifest in being able 
 
 Task cancellation exists today in Swift Concurrency and is something that libraries may already handle. In practice it means that any asynchronous function (or function which is expected to be called from within Tasks), may use the Task.isCancelled or try Task.checkCancellation() APIs to check if the task it is executing in was cancelled, and if so, it may cooperatively abort any operation it was currently performing.
 
-Cancellation can be useful in long running operations, or before kicking off some expensive operation. For example, an http client MAY check for cancellation before it sends an http request — it perhaps does not make sense to send a request if it is known the task awaiting on it does not care for the result anymore after all!
+Cancellation can be useful in long running operations, or before kicking off some expensive operation. For example, an HTTP client MAY check for cancellation before it sends a request — it perhaps does not make sense to send a request if it is known the task awaiting on it does not care for the result anymore after all!
 
 Cancellation in general can be understood as “the one waiting for the result of this task is not interested in it anymore”, and it usually is best to throw a “cancelled” error when the cancellation is encountered. However, in some situations returning a “partial” result may also be appropriate (e.g. if a task is collecting many results, it may return those it managed to collect until now, rather than returning none or ignoring the cancellation and collecting all remaining results).
 
@@ -150,7 +150,7 @@ The guidance here will evolve as Swift Evolution proposals for Custom Executors 
 
 ### Reduce use of Swift NIO Futures as “Concurrency Library“
 
-Swift NIO currently provides a number of currency types for the Swift on Server ecosystem. Most notably EventLoopFutures and EventLoopPromises, that are used widely for asynchronous results. While the sswg recommended using those in the past for easier interplay of server libraries, we advice to deprecate or remove them once Swift 6 lands. The swift-server ecosystem should go all in on the structured concurrency features the languages provides. For this reason, it is crucial to provide async/await APIs today, to give your library users time to adopt the new APIs.
+Swift NIO currently provides a number of currency types for the Swift on Server ecosystem. Most notably `EventLoopFuture`s and `EventLoopPromise`s, that are used widely for asynchronous results. While the SSWG recommended using those in the past for easier interplay of server libraries, we advice to deprecate or remove them once Swift 6 lands. The swift-server ecosystem should go all in on the structured concurrency features the languages provides. For this reason, it is crucial to provide async/await APIs today, to give your library users time to adopt the new APIs.
 
 Some NIO types will remain however in the public interfaces of Swift on server libraries. We expect that networking clients and servers continue to be initialized with EventLoopGroups. The underlying transport mechanism (NIOPosix and NIOTransportServices) should become implementation details however and should not be exposed to library adopters.
 
@@ -160,7 +160,7 @@ While subject to change, it is likely that Swift NIO will cut a 3.0 release in t
 
 Do not expect NIO to suddenly become “more async”, NIO’s inherent design principles are about performing small tasks on the event loop and using Futures for any async operations. The design of NIO is not expected to change. It is crucial to its high performance networking design. Channel pipelines are not expected to become “async”.
 
-The NIO team will however use the chance to remove deprecated APIs and improve some APIs. The scope of changes should be comparable to the NIO1 → NIO2 version bump. If your SwiftNIO code compiles today with out warnings, chances are high that it will continue to work without modifications in NIO3.
+The NIO team will however use the chance to remove deprecated APIs and improve some APIs. The scope of changes should be comparable to the NIO1 → NIO2 version bump. If your SwiftNIO code compiles today without warnings, chances are high that it will continue to work without modifications in NIO3.
 
 After the release of NIO3, NIO2 will see bug fixes only.
 
