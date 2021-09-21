@@ -9,6 +9,28 @@ In 2021 we saw structured concurrency and actors arrive with Swift 5.5. Now is a
 
 ## What you can do right now
 
+### `#if` guarding code using Concurrency
+
+In order to have code using concurrency along with code not using concurrency, you may have to `#if` guard certain pieces of code. The correct way to do so is the following:
+
+```swift
+#if compiler(>=5.5) && canImport(_Concurrency)
+...
+#endif
+```
+
+Please note that you do _not_ need to _import_ the `_Concurrency` at all, if it is present it is imported automatically.
+
+```swift
+// DO NOT DO THIS.
+// Instead don't do any import and it'll import automatically when possible.
+#if compiler(>=5.5) && canImport(_Concurrency)
+import _Concurrency
+#endif
+```
+
+
+
 ### API Design
 
 Firstly, existing libraries should strive to add `async` functions where possible to their user-facing “surface” APIs in addition to existing `*Future` based APIs wherever possible. These additive APIs can be gated on the Swift version and can be added without breaking existing users' code, for example like this:
