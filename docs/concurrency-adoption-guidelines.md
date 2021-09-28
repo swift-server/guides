@@ -22,9 +22,9 @@ In order to have code using concurrency along with code not using concurrency, y
 Please note that you do _not_ need to _import_ the `_Concurrency` at all, if it is present it is imported automatically.
 
 ```swift
+#if compiler(>=5.5) && canImport(_Concurrency)
 // DO NOT DO THIS.
 // Instead don't do any import and it'll import automatically when possible.
-#if compiler(>=5.5) && canImport(_Concurrency)
 import _Concurrency
 #endif
 ```
