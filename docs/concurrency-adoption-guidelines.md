@@ -172,7 +172,7 @@ The guidance here will evolve as Swift Evolution proposals for Custom Executors 
 
 ### Reduce use of Swift NIO Futures as “Concurrency Library“
 
-Swift NIO currently provides a number of currency types for the Swift on Server ecosystem. Most notably `EventLoopFuture`s and `EventLoopPromise`s, that are used widely for asynchronous results. While the SSWG recommended using those at the API level in the past for easier interplay of server libraries, we advise to deprecate or remove such APIs once Swift 6 lands. The swift-server ecosystem should go all in on the structured concurrency features the languages provides. For this reason, it is crucial to provide async/await APIs today, to give your library users time to adopt the new APIs.
+Swift NIO currently provides a number of concurrency types for the Swift on Server ecosystem. Most notably `EventLoopFuture`s and `EventLoopPromise`s, that are used widely for asynchronous results. While the SSWG recommended using those at the API level in the past for easier interplay of server libraries, we advise to deprecate or remove such APIs once Swift 6 lands. The swift-server ecosystem should go all in on the structured concurrency features the languages provides. For this reason, it is crucial to provide async/await APIs today, to give your library users time to adopt the new APIs.
 
 Some NIO types will remain however in the public interfaces of Swift on server libraries. We expect that networking clients and servers continue to be initialized with `EventLoopGroup`s. The underlying transport mechanism (`NIOPosix` and `NIOTransportServices`) should become implementation details however and should not be exposed to library adopters.
 
