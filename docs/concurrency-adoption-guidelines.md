@@ -176,7 +176,7 @@ Swift NIO currently provides a number of concurrency types for the Swift on Serv
 
 Some NIO types will remain however in the public interfaces of Swift on server libraries. We expect that networking clients and servers continue to be initialized with `EventLoopGroup`s. The underlying transport mechanism (`NIOPosix` and `NIOTransportServices`) should become implementation details however and should not be exposed to library adopters.
 
-### NIO 3
+### SwiftNIO 3
 
 While subject to change, it is likely that Swift NIO will cut a 3.0 release in the months after Swift 6.0, at which point in time Swift will have enabled “full” `Sendable` checking.
 
