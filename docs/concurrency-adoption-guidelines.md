@@ -9,6 +9,48 @@ In 2021 we saw structured concurrency and actors arrive with Swift 5.5. Now is a
 
 ## What you can do right now
 
+### API Design
+
+Firstly, existing libraries should strive to add `async` functions where possible to their user-facing “surface” APIs in addition to existing `*Future` based APIs wherever possible. These additive APIs can be gated on the Swift version and can be added without breaking existing users' code, for example like this:
+
+```swift
+extension Worker {
+  func work() -> EventLoopFuture<Value> { ... }
+
+  #if compiler(>=5.5) && canImport(_Concurrency)
+  @available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
+  func work() async throws -> Value { ... }
+  #endif
+}
+```
+
+If a function cannot fail but was using futures before, it should not include the `throws` keyword in its new incarnation. 
+
+Such adoption can begin immediately, and should not cause any issues to existing users of existing libraries. 
+
+### SwiftNIO helper functions
+
+To allow an easy transition to async code, SwiftNIO offers a number of helper methods on `EventLoopFuture` and `-Promise`.
+
+On every `EventLoopFuture` you can call `.get()` to transition the future into an `await`-able invocation. If you want to translate async/await calls to an `EventLoopFuture` we recommend the following pattern:
+
+```swift 
+#if compiler(>=5.5) && canImport(_Concurrency)
+
+func yourAsyncFunctionConvertedToAFuture(on eventLoop: EventLoop) 
+    -> EventLoopFuture<Result> {
+    let promise = context.eventLoop.makePromise(of: Out.self)
+    promise.completeWithTask {
+        try await yourMethod(yourInputs)
+    }
+    return promise.futureResult
+}
+#endif
+```
+
+Further helpers exist for `EventLoopGroup`, `Channel`, `ChannelOutboundInvoker` and `ChannelPipeline`.
+
+
 ### `#if` guarding code using Concurrency
 
 In order to have code using concurrency along with code not using concurrency, you may have to `#if` guard certain pieces of code. The correct way to do so is the following:
@@ -29,46 +71,6 @@ import _Concurrency
 #endif
 ```
 
-
-
-### API Design
-
-Firstly, existing libraries should strive to add `async` functions where possible to their user-facing “surface” APIs in addition to existing `*Future` based APIs wherever possible. These additive APIs can be gated on the Swift version and can be added without breaking existing users' code, for example like this:
-
-```swift
-extension Worker {
-  func work() -> EventLoopFuture<Value> { ... }
-  
-  #if swift(>=5.5)
-  func work() async throws -> Value { ... }
-  #endif
-}
-```
-
-If a function cannot fail but was using futures before, it should not include the `throws` keyword in its new incarnation. 
-
-Such adoption can begin immediately, and should not cause any issues to existing users of existing libraries. 
-
-### SwiftNIO helper functions
-
-To allow an easy transition to async code, SwiftNIO offers a number of helper methods on `EventLoopFuture` and `-Promise`. Those live in the `_NIOConcurrency` module and will move to `NIOCore` once Swift concurrency is released.
-
-On every `EventLoopFuture` you can call `.get()` to transition the future into an `await`-able invocation. If you want to translate async/await calls to an `EventLoopFuture` we recommend the following pattern:
-
-```swift 
-#if swift(>=5.5)
-func yourAsyncFunctionConvertedToAFuture(on eventLoop: EventLoop) 
-    -> EventLoopFuture<Result> {
-    let promise = context.eventLoop.makePromise(of: Out.self)
-    promise.completeWithTask {
-        try await yourMethod(yourInputs)
-    }
-    return promise.futureResult
-}
-#endif
-```
-
-Further helpers exist for `EventLoopGroup`, `Channel`, `ChannelOutboundInvoker` and `ChannelPipeline`.
 
 ### Sendable Checking
 
@@ -110,18 +112,20 @@ Here, the `Value` type must be marked `Sendable` for Swift 6’s concurrency che
 In such situations, it may be helpful to utilize the following trick to be able to share the same `Container` declaration between both Swift versions of the library:
 
 ```swift
-#if compiler(>=5.5)
+#if swift(>=5.5) && canImport(_Concurrency)
 public typealias MYPREFIX_Sendable = Swift.Sendable
 #else 
 public typealias MYPREFIX_Sendable = Any
 #endif
 ```
 
+> **NOTE:** Yes, we're using `swift(>=5.5)` here, while we're using `compiler(>=5.5)` to guard specific APIs using conrrency features. 
+
 The `Any` alias is effectively a no-op when applied as generic constraint, and thus this way it is possible to keep the same `Container<Value>` declaration working across Swift versions.
 
 ### Task Local Values and Logging
 
-The newly introduced Task Local Values API ([SE-0311][SE-0311]) allows for implicit carrying of metadata along with `Task` execution. It is a natural fit for for tracing and carrying metadata around with task execution, and e.g. including it in log messages. 
+The newly introduced Task Local Values API ([SE-0311][SE-0311]) allows for implicit carrying of metadata along with `Task` execution. It is a natural fit for tracing and carrying metadata around with task execution, and e.g. including it in log messages. 
 
 We are working on adjusting [SwiftLog](https://github.com/apple/swift-log) to become powerful enough to automatically pick up and log specific task local values. This change will be introduced in a source compatible way. 
 
@@ -170,17 +174,21 @@ While we expect potential performance gains from using custom executors “on th
 The guidance here will evolve as Swift Evolution proposals for Custom Executors are proposed, but don’t hold off adopting Swift Concurrency until custom executors “land” - it is important to start adoption early. For most code we believe that the gains from adopting Swift Concurrency vastly outweigh the slight performance cost actor-hops might induce.
 
 
-### Reduce use of Swift NIO Futures as “Concurrency Library“
+### Reduce use of SwiftNIO Futures as “Concurrency Library“
 
-Swift NIO currently provides a number of concurrency types for the Swift on Server ecosystem. Most notably `EventLoopFuture`s and `EventLoopPromise`s, that are used widely for asynchronous results. While the SSWG recommended using those at the API level in the past for easier interplay of server libraries, we advise to deprecate or remove such APIs once Swift 6 lands. The swift-server ecosystem should go all in on the structured concurrency features the languages provides. For this reason, it is crucial to provide async/await APIs today, to give your library users time to adopt the new APIs.
+SwiftNIO currently provides a number of concurrency types for the Swift on Server ecosystem. Most notably `EventLoopFuture`s and `EventLoopPromise`s, that are used widely for asynchronous results. While the SSWG recommended using those at the API level in the past for easier interplay of server libraries, we advise to deprecate or remove such APIs once Swift 6 lands. The swift-server ecosystem should go all in on the structured concurrency features the languages provides. For this reason, it is crucial to provide async/await APIs today, to give your library users time to adopt the new APIs.
 
 Some NIO types will remain however in the public interfaces of Swift on server libraries. We expect that networking clients and servers continue to be initialized with `EventLoopGroup`s. The underlying transport mechanism (`NIOPosix` and `NIOTransportServices`) should become implementation details however and should not be exposed to library adopters.
 
 ### SwiftNIO 3
 
-While subject to change, it is likely that Swift NIO will cut a 3.0 release in the months after Swift 6.0, at which point in time Swift will have enabled “full” `Sendable` checking.
+While subject to change, it is likely that SwiftNIO will cut a 3.0 release in the months after Swift 6.0, at which point in time Swift will have enabled “full” `Sendable` checking.
 
-Do not expect NIO to suddenly become “more async”, NIO’s inherent design principles are about performing small tasks on the event loop and using Futures for any async operations. The design of NIO is not expected to change. It is crucial to its high performance networking design. Channel pipelines are not expected to become “async”.
+You should not expect NIO to suddenly become “more async”, NIO’s inherent design principles are about performing small tasks on the event loop and using Futures for any async operations. The design of NIO is not expected to change. Channel pipelines are not expected to become "async" in the Swift Concurrency meaning of the word. This is because SwiftNIO is, at its heard, an IO system, and that poses a challenge to the co-operative, shared, thread-pool used by Swift Concurrency. This thread pool must not be blocked by any operation, because doing so will starve the pool and prevent further progress of other async tasks.
+
+I/O systems however must, at some point, block a thread waiting for more I/O events, either in an I/O syscall or in something like epoll_wait. This is how NIO works: each of the event loop threads ultimately blocks on epoll_wait. We can’t do that inside the cooperative thread pool, as to do so would starve it for other async tasks, so we’d have to do so on a different thread. As such, SwiftNIO should not be used _on_ the cooperative threadpool, but should take ownership and full control of its threads–because it is an I/O system.
+
+It would be possible to make all NIO work happen on the co-operative pool, and thread-hop between each I/O operation and dispatching it onto the async/await pool, however this is not acceptable for high performance I/O: the context switch for _each I/O operation_ is too expensive. As a result, SwiftNIO is not planning to just adopt Swift Concurrency for the ease of use it brings, because in its specific context, the context switches are not an acceptable tradeoff. SwiftNIO could however cooperate with Swift Concurrency with the arrival of "custom executors" in the language runtime, however this has not been fully proposed yet, so we are not going to speculate about this too much.
 
 The NIO team will however use the chance to remove deprecated APIs and improve some APIs. The scope of changes should be comparable to the NIO1 → NIO2 version bump. If your SwiftNIO code compiles today without warnings, chances are high that it will continue to work without modifications in NIO3.
 
@@ -188,13 +196,13 @@ After the release of NIO3, NIO2 will see bug fixes only.
 
 ### End-user code breakage
 
-It is expected that Swift 6 will break some code. As mentioned Swift NIO 3 is also going to be released sometime around Swift 6 dropping. Keeping this in mind, it might be a good idea to align major version releases around the same time, along with updating version requirements to Swift 6 and NIO 3 in your libraries.
+It is expected that Swift 6 will break some code. As mentioned SwiftNIO 3 is also going to be released sometime around Swift 6 dropping. Keeping this in mind, it might be a good idea to align major version releases around the same time, along with updating version requirements to Swift 6 and NIO 3 in your libraries.
 
-Both Swift and Swift NIO are not planning to do “vast amounts of change”, so adoption should be possible without major pains.
+Both Swift and SwiftNIO are not planning to do “vast amounts of change”, so adoption should be possible without major pains.
 
 ### Guidance for library users
 
-As soon as Swift 6 comes out, we recommend using the latest Swift 6 toolchains, even if using the Swift 5.5.n language mode (which may yield only warnings rather than hard failures on failed Sendability checks).
+As soon as Swift 6 comes out, we recommend using the latest Swift 6 toolchains, even if using the Swift 5.5.n language mode (which may yield only warnings rather than hard failures on failed Sendability checks). This will result in better warnings and compiler hints, than just using a 5.5 toolchain.
 
 [sendable-staging]: https://github.com/DougGregor/swift-evolution/blob/sendable-staging/proposals/nnnn-sendable-staging.md
 [SE-0302]: https://github.com/apple/swift-evolution/blob/main/proposals/0302-concurrent-value-and-concurrent-closures.md
