@@ -23,5 +23,6 @@ They should also utilize the core observability libraries, such as: logging, met
 The below guidelines are aimed to help library developers with some of the typical questions and challenges they might face when designing server-side focused libraries with Swift:
 
 - [SwiftLog: Log level guidelines](docs/libs/log-levels.md)
+- [Swift Concurrency Adoption Guidelines](docs/concurrency-adoption-guidelines.md)
 
 _The guide is a community effort, and all are invited to share their tips and know-how. Please provide a PR if you have ideas for improving this guide!_
