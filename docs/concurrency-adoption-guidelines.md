@@ -119,7 +119,7 @@ public typealias MYPREFIX_Sendable = Any
 #endif
 ```
 
-> **NOTE:** Yes, we're using `swift(>=5.5)` here, while we're using `compiler(>=5.5)` to guard specific APIs using conrrency features. 
+> **NOTE:** Yes, we're using `swift(>=5.5)` here, while we're using `compiler(>=5.5)` to guard specific APIs using concurrency features. 
 
 The `Any` alias is effectively a no-op when applied as generic constraint, and thus this way it is possible to keep the same `Container<Value>` declaration working across Swift versions.
 
