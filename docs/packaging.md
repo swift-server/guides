@@ -21,14 +21,12 @@ WORKDIR /workspace
 # copy the source to the docker image
 COPY . /workspace
 
-RUN swift build -c release
+RUN swift build -c release -static-stdlib
 
 #------- package -------
 FROM centos:8
 # copy executables
 COPY --from=builder /workspace/.build/release/<executable-name> /
-# copy Swift's dynamic libraries dependencies
-COPY --from=builder /usr/lib/swift/linux/lib*so* /
 
 # set the entry point (application name)
 CMD ["<executable-name>"]
