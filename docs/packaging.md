@@ -12,7 +12,7 @@ Here is an example `Dockerfile` that builds and packages the application on top 
 
 ```Dockerfile
 #------- build -------
-FROM swiftlang/swift:nightly-centos8 as builder
+FROM swift:centos8 as builder
 
 # set up the workspace
 RUN mkdir /workspace
@@ -21,14 +21,12 @@ WORKDIR /workspace
 # copy the source to the docker image
 COPY . /workspace
 
-RUN swift build -c release
+RUN swift build -c release --static-swift-stdlib
 
 #------- package -------
-FROM centos:8
+FROM centos8
 # copy executables
 COPY --from=builder /workspace/.build/release/<executable-name> /
-# copy Swift's dynamic libraries dependencies
-COPY --from=builder /usr/lib/swift/linux/lib*so* /
 
 # set the entry point (application name)
 CMD ["<executable-name>"]
@@ -66,7 +64,7 @@ Since distroless supports Docker and is based on Debian, packaging a Swift appli
 ```Dockerfile
 #------- build -------
 # Building using Ubuntu Bionic since its compatible with Debian runtime
-FROM swiftlang/swift:nightly-bionic as builder
+FROM swift:bionic as builder
 
 # set up the workspace
 RUN mkdir /workspace
@@ -75,7 +73,7 @@ WORKDIR /workspace
 # copy the source to the docker image
 COPY . /workspace
 
-RUN swift build -c release
+RUN swift build -c release --static-swift-stdlib
 
 #------- package -------
 # Running on distroless C++ since it includes
@@ -83,8 +81,6 @@ RUN swift build -c release
 FROM gcr.io/distroless/cc-debian10
 # copy executables
 COPY --from=builder /workspace/.build/release/<executable-name> /
-# copy Swift's dynamic libraries dependencies
-COPY --from=builder /usr/lib/swift/linux/lib*so* /
 
 # set the entry point (application name)
 CMD ["<executable-name>"]
@@ -106,23 +102,22 @@ First, use the `docker run` command from the application's source location to bu
 $ docker run --rm \
   -v "$PWD:/workspace" \
   -w /workspace \
-  swift:5.2-bionic \
-  /bin/bash -cl "swift build -c release"
+  swift:bionic \
+  /bin/bash -cl "swift build -c release --static-swift-stdlib"
 ```
 
 Note we are bind mounting the source directory so that the build writes the build artifacts to the local drive from which we will package them later.
 
-Next we can create a staging area with the application's executables and Swift's dynamic libraries dependencies:
+Next we can create a staging area with the application's executable:
 
 ```bash
 $ docker run --rm \
   -v "$PWD:/workspace" \
   -w /workspace \
-  swift:5.2-bionic  \
+  swift:bionic  \
   /bin/bash -cl ' \
      rm -rf .build/install && mkdir -p .build/install && \
-     cp -P .build/release/<executable-name> .build/install/ && \
-     cp -P /usr/lib/swift/linux/lib*so* .build/install/'
+     cp -P .build/release/<executable-name> .build/install/'
 ```
 
 Note this command could be combined with the build command above--we separated them to make the example more readable.
@@ -137,7 +132,7 @@ We can test the integrity of the tarball by extracting it to a directory and run
 
 ```bash
 $ cd <extracted directory>
-$ docker run -v "$PWD:/app" -w /app swift:5.2-bionic-slim ./<executable-name>
+$ docker run -v "$PWD:/app" -w /app bionic ./<executable-name>
 ```
 
 Deploying the application's tarball to the target server can be done using utilities like `scp`, or in a more sophisticated setup using configuration management system like `chef`, `puppet`, `ansible`, etc.
