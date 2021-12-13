@@ -15,7 +15,10 @@ more detail. In order to run Swift Server applications, we need to:
 - enable [Billing](https://console.cloud.google.com/billing) (requires a credit
   card). Note that when creating a new account, GCP provides you with $300 of
   free credit to use in the first 90 days. You can follow this guide for free
-  for a new account.
+  for a new account. Everything in this guide should fall into the "Free Tier"
+  category at GCP (120 build minutes per day, 2 million Cloud Run requests per
+  month
+  [Free Tier Usage Limits](https://cloud.google.com/free/docs/gcp-free-tier#free-tier-usage-limits))
 - enable the
   [Cloud Build API](https://console.cloud.google.com/apis/api/cloudbuild.googleapis.com/overview)
 - enable the
