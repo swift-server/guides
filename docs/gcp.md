@@ -45,7 +45,7 @@ You should test your Dockerfile with `docker build . -t test` and
 `cloudbuild.yml` contains a set of steps to build the server image directly in
 the cloud and deploy a new Cloud Run instance after the successful build.
 
-The _Dockerfile_ is the same as in the [./packaging.md#docker] guide. Replace
+The _Dockerfile_ is the same as in the [./packaging.md#docker](guide). Replace
 `<executable-name>` with your `executableTarget` (ie. "Server"):
 
 ```Dockerfile
