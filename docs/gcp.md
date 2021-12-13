@@ -167,8 +167,17 @@ and click "Create Trigger":
 In the Trigger overview page, you should see your new "swift-service" trigger.
 Click on "RUN" on the right to start the trigger manually from the `main`
 branch. With a simple Hummingbird project the build takes about 7-8 minutes.
-Vapor takes about 25 minutes. After a successful build you should see the
-service URL in the build logs:
+Vapor takes about 25 minutes on the standard/small build machines, which are
+fairly slow. "Jordane" from the Vapor Discord community
+[recommends using `machineType: E2_HIGHCPU_8`](https://discord.com/channels/431917998102675485/447893851374616576/915819735738888222)
+in the `cloudbuild.yaml` to speed up deployments:
+
+```yaml
+options:
+  machineType: 'E2_HIGHCPU_8'
+```
+
+After a successful build you should see the service URL in the build logs:
 
 ![successful build and deployment to cloud run](../images/gcp-cloud-build.png)
 
