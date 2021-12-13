@@ -42,8 +42,6 @@ project root:
 
 You should test your Dockerfile with `docker build . -t test` and
 `docker run -p 8080:8080 test` and make sure it builds and runs locally.
-`cloudbuild.yml` contains a set of steps to build the server image directly in
-the cloud and deploy a new Cloud Run instance after the successful build.
 
 The _Dockerfile_ is the same as in the [./packaging.md#docker](guide). Replace
 `<executable-name>` with your `executableTarget` (ie. "Server"):
@@ -68,7 +66,6 @@ COPY --from=builder /workspace/.build/release/<executable-name> /
 
 # set the entry point (application name)
 CMD ["<executable-name>"]
-
 ```
 
 ### `cloudbuild.yaml`
