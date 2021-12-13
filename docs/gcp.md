@@ -12,7 +12,10 @@ You can read about
 [Getting Started with GCP](https://cloud.google.com/gcp/getting-started/) in
 more detail. In order to run Swift Server applications, we need to:
 
-- enable [Billing](https://console.cloud.google.com/billing) (requires a credit card). Note that when creating a new account, GCP provides you with $300 of free credit to use in the first 90 days. You can follow this guide for free for a new account.
+- enable [Billing](https://console.cloud.google.com/billing) (requires a credit
+  card). Note that when creating a new account, GCP provides you with $300 of
+  free credit to use in the first 90 days. You can follow this guide for free
+  for a new account.
 - enable the
   [Cloud Build API](https://console.cloud.google.com/apis/api/cloudbuild.googleapis.com/overview)
 - enable the
@@ -40,7 +43,7 @@ You should test your Dockerfile with `docker build . -t test` and
 the cloud and deploy a new Cloud Run instance after the successful build.
 
 The _Dockerfile_ is the same as in the [./packaging.md#docker] guide. Replace
-`<executable-name>` with your `executableTarget`:
+`<executable-name>` with your `executableTarget` (ie. "Server"):
 
 ```Dockerfile
 #------- build -------
@@ -67,8 +70,13 @@ CMD ["<executable-name>"]
 
 ### `cloudbuild.yaml`
 
-The `cloudbuild.yaml` files contains a set of steps to build the server image directly in the cloud and deploy a new Cloud Run instance after the successful build. Replace `<REPOSITORY_NAME>` with your Artifact Registry repository name and `<SERVICE_NAME>` with your service/image name. Replace `<REGION>` with the
-[region of your choice](https://cloud.google.com/about/locations/).
+The `cloudbuild.yaml` files contains a set of steps to build the server image
+directly in the cloud and deploy a new Cloud Run instance after the successful
+build. `${_VAR}` are
+["substitution variables"](https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values)
+that are available during build time and can be passed on into the runtime
+environment in the "deploy" phase. We will set the variables later when we
+configure the [Build Trigger](#deployment) (Step 5).
 
 ```yaml
 steps:
@@ -77,36 +85,39 @@ steps:
     args:
       - '-c'
       - |
-        docker pull us-central1-docker.pkg.dev/$PROJECT_ID/swift/server:latest || exit 0
+        docker pull ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY_NAME}/${_SERVICE_NAME}:latest || exit 0
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - build
       - -t
-      - us-central1-docker.pkg.dev/$PROJECT_ID/swift/server:$SHORT_SHA
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY_NAME}/${_SERVICE_NAME}:$SHORT_SHA
       - -t
-      - us-central1-docker.pkg.dev/$PROJECT_ID/swift/server:latest
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY_NAME}/${_SERVICE_NAME}:latest
       - .
       - --cache-from
-      - us-central1-docker.pkg.dev/$PROJECT_ID/swift/server:latest
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY_NAME}/${_SERVICE_NAME}:latest
   - name: 'gcr.io/cloud-builders/docker'
     args:
-      ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/swift/server:$SHORT_SHA']
+      [
+        'push',
+        '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY_NAME}/${_SERVICE_NAME}:$SHORT_SHA'
+      ]
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - run
       - deploy
       - swift-service
-      - --image=us-central1-docker.pkg.dev/$PROJECT_ID/swift/server:$SHORT_SHA
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY_NAME}/${_SERVICE_NAME}:$SHORT_SHA
       - --port=8080
-      - --region=us-central1
+      - --region=${_REGION}
       - --memory=512Mi
       - --platform=managed
       - --allow-unauthenticated
       - --min-instances=0
       - --max-instances=5
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/swift/server:$SHORT_SHA'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/swift/server:latest'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY_NAME}/${_SERVICE_NAME}:$SHORT_SHA'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY_NAME}/${_SERVICE_NAME}:latest'
 timeout: 1800s
 ```
 
@@ -117,29 +128,40 @@ timeout: 1800s
 3. Push the image to the Artifact Registry
 4. Deploy the image to Cloud Run
 
-`images` specifies the build images to store in the restristry. The default
+`images` specifies the build images to store in the registry. The default
 `timeout` is 10 minutes, so we'll need to increase it for Swift builds. We use
-`8080` as the default port here, though it's recommended to remove this line and have
-the server listen on `$PORT`.
+`8080` as the default port here, though it's recommended to remove this line and
+have the server listen on `$PORT`.
 
 ## Deployment
 
 ![cloud build trigger settings and how to connect a code repository](../images/gcp-connect-repo.png)
 
-Push all files to a remote repository. Cloud Build currently supports,  GitHub, Bitbucket and GitLab.
-now) and head to
+Push all files to a remote repository. Cloud Build currently supports, GitHub,
+Bitbucket and GitLab. now) and head to
 [Cloud Build Triggers](https://console.cloud.google.com/cloud-build/triggers)
 and click "Create Trigger":
 
 1. Add a name and description
 2. Event: "Push to a branch" is active
-3. Source: "Connect New Repository" and authorize with your code provider, and add the repository where your Swift server code is hosted. Note that you need to configure [GitHub](https://cloud.google.com/build/docs/automating-builds/build-repos-from-github), [GitLab](https://cloud.google.com/build/docs/automating-builds/build-repos-from-gitlab) or [Bitbucket](https://cloud.google.com/build/docs/automating-builds/build-repos-from-bitbucket-cloud) to allow GCP access first.
+3. Source: "Connect New Repository" and authorize with your code provider, and
+   add the repository where your Swift server code is hosted. Note that you need
+   to configure
+   [GitHub](https://cloud.google.com/build/docs/automating-builds/build-repos-from-github),
+   [GitLab](https://cloud.google.com/build/docs/automating-builds/build-repos-from-gitlab)
+   or
+   [Bitbucket](https://cloud.google.com/build/docs/automating-builds/build-repos-from-bitbucket-cloud)
+   to allow GCP access first.
 4. Configuration: "Cloud Build configuration file" / Location: Repository
 5. Advanced:
    [Substitution variables](https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values):
-   if you use environment variables for example to connect to a database or 3rd
-   party services, you can set the values here. You can also control the build
-   arguments such as memory, region etc.
+   You need to set the variables for region, repository name and service name
+   here. You can pick a
+   [region of your choice](https://cloud.google.com/about/locations/) (ie.
+   `us-central1`). All custom variables must start with an underscore
+   (`_REGION`). `_REPOSITORY_NAME` and `_SERVICE_NAME` are up to you. If you use
+   environment variables for example to connect to a database or 3rd party
+   services, you can set the values here too.
 6. "Create"
 
 In the Trigger overview page, you should see your new "swift-service" trigger.
