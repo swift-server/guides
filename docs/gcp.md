@@ -12,8 +12,7 @@ You can read about
 [Getting Started with GCP](https://cloud.google.com/gcp/getting-started/) in
 more detail. In order to run Swift Server applications, we need to:
 
-- enable [Billing](https://console.cloud.google.com/billing) (requires a credit
-  card)
+- enable [Billing](https://console.cloud.google.com/billing) (requires a credit card). Note that when creating a new account, GCP provides you with $300 of free credit to use in the first 90 days. You can follow this guide for free for a new account.
 - enable the
   [Cloud Build API](https://console.cloud.google.com/apis/api/cloudbuild.googleapis.com/overview)
 - enable the
@@ -31,19 +30,21 @@ value. For the workflow to pass, two files are essential, both need to be in the
 project root:
 
 1. Dockerfile
-2. cloudbuild.yml
+2. cloudbuild.yaml
+
+### `Dockerfile`
 
 You should test your Dockerfile with `docker build . -t test` and
 `docker run -p 8080:8080 test` and make sure it builds and runs locally.
 `cloudbuild.yml` contains a set of steps to build the server image directly in
 the cloud and deploy a new Cloud Run instance after the successful build.
 
-_Dockerfile_ is the same as in the [./packaging.md#docker] guide. Replace
+The _Dockerfile_ is the same as in the [./packaging.md#docker] guide. Replace
 `<executable-name>` with your `executableTarget`:
 
 ```Dockerfile
 #------- build -------
-FROM swiftlang/swift:nightly-centos8 as builder
+FROM swift:centos as builder
 
 # set up the workspace
 RUN mkdir /workspace
@@ -52,7 +53,7 @@ WORKDIR /workspace
 # copy the source to the docker image
 COPY . /workspace
 
-RUN swift build -c release -static-stdlib
+RUN swift build -c release --static-swift-stdlib
 
 #------- package -------
 FROM centos:8
@@ -64,8 +65,9 @@ CMD ["<executable-name>"]
 
 ```
 
-_cloudbuild.yml_. Replace `swift` with your Artifact Registry repository name
-and `server` with your service/image name. Replace `us-central1` with the
+### `cloudbuild.yaml`
+
+The `cloudbuild.yaml` files contains a set of steps to build the server image directly in the cloud and deploy a new Cloud Run instance after the successful build. Replace `<REPOSITORY_NAME>` with your Artifact Registry repository name and `<SERVICE_NAME>` with your service/image name. Replace `<REGION>` with the
 [region of your choice](https://cloud.google.com/about/locations/).
 
 ```yaml
@@ -110,29 +112,28 @@ timeout: 1800s
 
 ### The steps in detail
 
-1. pull the latest image from the Artifact Registry to retrieve cached layers
-2. built the image with `$SHORT_SHA` and `latest` tag
-3. push the image to the Artifact Registry
-4. deploy the image to Cloud Run
+1. Pull the latest image from the Artifact Registry to retrieve cached layers
+2. Build the image with `$SHORT_SHA` and `latest` tag
+3. Push the image to the Artifact Registry
+4. Deploy the image to Cloud Run
 
 `images` specifies the build images to store in the restristry. The default
 `timeout` is 10 minutes, so we'll need to increase it for Swift builds. We use
-`8080` as the default port here, it's recommended to remove this line and have
+`8080` as the default port here, though it's recommended to remove this line and have
 the server listen on `$PORT`.
 
 ## Deployment
 
 ![cloud build trigger settings and how to connect a code repository](../images/gcp-connect-repo.png)
 
-Push all files to a GitHub or BitBucket (the only two supported providers right
+Push all files to a remote repository. Cloud Build currently supports,  GitHub, Bitbucket and GitLab.
 now) and head to
 [Cloud Build Triggers](https://console.cloud.google.com/cloud-build/triggers)
 and click "Create Trigger":
 
 1. Add a name and description
 2. Event: "Push to a branch" is active
-3. Source: "Connect New Repository" and authorize with your code provider, add
-   the repository where your swift server code is hosted
+3. Source: "Connect New Repository" and authorize with your code provider, and add the repository where your Swift server code is hosted. Note that you need to configure [GitHub](https://cloud.google.com/build/docs/automating-builds/build-repos-from-github), [GitLab](https://cloud.google.com/build/docs/automating-builds/build-repos-from-gitlab) or [Bitbucket](https://cloud.google.com/build/docs/automating-builds/build-repos-from-bitbucket-cloud) to allow GCP access first.
 4. Configuration: "Cloud Build configuration file" / Location: Repository
 5. Advanced:
    [Substitution variables](https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values):

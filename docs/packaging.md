@@ -21,7 +21,7 @@ WORKDIR /workspace
 # copy the source to the docker image
 COPY . /workspace
 
-RUN swift build -c release -static-stdlib
+RUN swift build -c release --static-swift-stdlib
 
 #------- package -------
 FROM centos:8
