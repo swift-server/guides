@@ -164,6 +164,13 @@ and click "Create Trigger":
    services, you can set the values here too.
 6. "Create"
 
+As a last step before deploying the new service, go to the
+[Cloud Build Settings](https://console.cloud.google.com/cloud-build/settings)
+and make sure "Cloud Run" is enabled. This gives Cloud Build the necessary IAM
+permissions to deploy Cloud Run services.
+
+![cloud build settings](../images/gcp-cloud-build-settings.png)
+
 In the Trigger overview page, you should see your new "swift-service" trigger.
 Click on "RUN" on the right to start the trigger manually from the `main`
 branch. With a simple Hummingbird project the build takes about 7-8 minutes.
