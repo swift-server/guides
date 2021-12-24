@@ -16,7 +16,7 @@ A number of editors you may already be familiar with have support for writing Sw
 * [VIM plugin](https://github.com/keith/swift.vim)
 
 * [Visual Studio Code](https://code.visualstudio.com)
-    * [Optional code completion plugin](https://marketplace.visualstudio.com/items?itemName=vknabel.vscode-swift-development-environment)
+    * [Swift for Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=sswg.swift-lang)
 
 * [Xcode](https://developer.apple.com/xcode/ide/)
 
