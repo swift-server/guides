@@ -6,8 +6,8 @@ The following guides can help with the deployment to public cloud providers:
 * [DigitalOcean](digital-ocean.md)
 * [Heroku](heroku.md)
 * [Kubernetes & Docker](packaging.md#docker)
-* [GCP][gcp.md]
-* _Have a guides for other popular public clouds like GCP, Azure? Add it here!_
+* [GCP](gcp.md)
+* _Have a guides for other popular public clouds like Azure? Add it here!_
 
 If you are deploying to you own servers (e.g. bare metal, VMs or Docker) there are several strategies for packaging Swift applications for deployment, see the [Packaging Guide](packaging.md) for more information.
 
