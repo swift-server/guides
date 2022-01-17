@@ -18,22 +18,22 @@ Concurrency and Locking
 
 For a better tradeoff, lets first consider the differences between classes and struct:
 
-Classes are reference semantics and structs are value semantics. We use structs as values and
+Classes have reference semantics and structs have value semantics. We use structs as values and
 classes as objects with identity. We use structs when comparing instance data with == is required
-and classes when we compare instance identity with === as classes can hold values with same
-reference in the memory. This is why structs are safe in mutation while classes aren’t. 
+and classes when we compare instance identity with ===. Classes can hold values with same
+reference in the memory and can undergo mutation while structs dont.  
 
 Structs use stack memory allocation while classes rely on heap memory allocation. Stack allocation
-like insertion and deletion are faster than heap that stores different reference types and
+like insertion, deletion etc are faster than heap that stores different reference types and
 manages reference count of that object. Hence, structs have faster memory allocation than classes. 
 But gradually, as the number of instances increases in the stack, it becomes difficult to copy
-large value types. To reduce the complexity of copying large value types, copy on write(CoW) is
-used from the swift standard library.
+large value types and structs becomes slower. To reduce the complexity of copying large value types, 
+copy on write(CoW) is used from the swift standard library.
 With copy on write behaviour, we dont need to create copies of the variable when its passed, 
 rather only creates the copy when the objects changes its value. Eg- we have an array of 10 
 million data that is being passed but a copy will only be produced if the array changes.
 
-Thus, the CoW is performant with struct.
+Thus, the CoW is performant with struct here.
 CoW is also performant in struct backed by class where the performance tend to be slower as
  a result of overhead. 
 Consider example:
