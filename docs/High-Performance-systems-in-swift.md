@@ -34,8 +34,6 @@ rather only creates the copy when the objects changes its value. Eg- we have an 
 million data that is being passed but a copy will only be produced if the array changes.
 
 Thus, the CoW is performant with struct here.
-CoW is also performant in struct backed by class where the performance tend to be slower as
- a result of overhead. 
 Consider example:
 
 
