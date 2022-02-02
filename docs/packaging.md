@@ -152,4 +152,4 @@ In most cases, source distribution is not advised due to these security concerns
 
 ## Static linking and Curl/XML
 
-**Note:** if you are compiling with `-static-stdlib` and using Curl with FoundationNetworking or XML with FoundationXML you must have curl and/or XML installed on the target system for it to work.
+**Note:** if you are compiling with `-static-stdlib` and using Curl with FoundationNetworking or XML with FoundationXML you must have libcurl and/or libxml2 installed on the target system for it to work.
