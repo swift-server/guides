@@ -149,3 +149,7 @@ The main advantage of this approach is that it is easy. Additional advantage is 
 The main disadvantage of this approach that the server has the full toolchain (e.g. compiler) which means a sophisticated attacker can potentially find ways to execute code. They can also potentially gain access to the source code which might be sensitive. If the application code needs to be cloned from a private or protected repository, the server needs access to credentials which adds additional attack surface area.
 
 In most cases, source distribution is not advised due to these security concerns.
+
+## Static linking and Curl/XML
+
+**Note:** if you are compiling with `-static-stdlib` and using Curl with FoundationNetworking or XML with FoundationXML you must have libcurl and/or libxml2 installed on the target system for it to work.
