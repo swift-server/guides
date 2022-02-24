@@ -1,20 +1,46 @@
+# Index For talks about Performance in Swift
 
-# High Performance Systems in Swift
+## Overview: 
+This guide contains a list of talks and the key takeaways from it. It explains the published wwdc talks
+but with more examples and some other scenarios to better understand it. 
 
-This guide covers:
+### Contents:
 
-Class Vs Struct tradeoffs
+- [Class Vs Struct tradeoffs and CoW performance](#class-vs-struct-tradeoff-and-cow-performance)
+    - [Difference btw structs and classes](#differences)
+    - [Copy-on-Write](#copy-on-write)
+    - [Benchmarking Struct with Class](#benchmarking-structs-with-classes)
+    - [Implementing Struct backed by Class](#implementing-structs-backed-by-classes)
+    - [Implementing Struct backed by Class with Copy on Write](#struct-backed-by-class-with-copy-on-write)
+    - [Drawbacks of CoW](#drawbacks-of-copy-on-write)
 
-Copy on Write
+- [Concurrency and Locking](#concurrency-and-locking-performance)
+    - [Race Condition with Semaphore](#race-conditions-with-semaphores)
+    - [Priority inversion with Semaphore](#priority-inversion-with-semaphores)
+    - [Thread explosion](#thread-explosion)
+    - [Runtime contract and rewriting code with async/await semantics for better code performance.](#runtime-contract)
+    - [Synchronization offering:](#synchronization)
+        - [Mutual Exclusion](#mutual-exclusion)
+            - This covers:
+                - [Actors with data races when we are accessing the mutable states within the actors](#acessing-mutable-state-within-the-actor)
+                - Actors with data races when we are accessing the mutable states outside the actors and fixing it with sendable protocols(#acessing-mutable-state-outside-the-actor)
+        - [Reentrancy and Prioritization](#reentrancy-and-prioritization)
+            - This covers actors with Priority Inversion
+        - [Main Actor](#main-actor)
+            -Batching up code to improve time complexity and performance
+    - [Potential bug around await semantics](#bug-potential)
+    - [Other primitives](#throwback-to-other-primitives)
+    - [Lock Contention Pattern](#lock-contention-pattern)
 
-Concurrency and Locking
 
 
 
 
 
-## Class Vs Struct tradeoff and CoW performance
 
+## [Class Vs Struct tradeoff and CoW performance](https://www.youtube.com/watch?v=iLDldae64xE)
+
+### Differences:
 
 For a better tradeoff, lets first consider the differences between classes and struct:
 
@@ -36,6 +62,7 @@ Stack allocation like insertion and deletion are faster than heap that manages r
 every object. Therefore, structs have faster memory allocation and are more performant in use than
 classes. 
 
+### Copy-on-Write
 Value Semantics performs deep copy either when a new variable is introduced or an existing variable is mutated. 
 If our structs contain reference types, the reference types won’t automatically get copied upon assigning the struct to
 a new variable. Instead, the references themselves get copied. This is called a shallow copy.
@@ -54,23 +81,23 @@ Consider an example:
 
 ```swift
 public struct HTTPRequest {
-	public var method: HTTPMethod
-	public var target: String
-	public var version: HTTPVersion
-	public var headers: [(String, String)]
-	public var body: [UInt8]?
-	public var trailers: [(String, String)]?
+    public var method: HTTPMethod
+    public var target: String
+    public var version: HTTPVersion
+    public var headers: [(String, String)]
+    public var body: [UInt8]?
+    public var trailers: [(String, String)]?
 ]
-public 	enum HTTPMethod: String{
-	case GET
-	case POST
-	case DELETE
-	case PUT
-	// …
+public     enum HTTPMethod: String{
+    case GET
+    case POST
+    case DELETE
+    case PUT
+    // …
 }
 public struct HTTPVersion{
-	var major: Int
-	var minor: Int
+    var major: Int
+    var minor: Int
 }
 ```
 ``` swift
@@ -84,11 +111,12 @@ change the target of lang, the swift target remains same as a result of structs 
 
 ```swift 
 public func transform(_ httpRequest: HTTPRequest)->HTTPRequest{
-	return httpRequest
+    return httpRequest
 } 
 _ = transform(httpRequest)
 
 ```
+### Benchmarking structs with classes
 Here, we are creating a transform function that returns our httpRequest back. This method is mainly
 created for the purpose of checking speed.
 The transform function for a struct httpRequest takes 52 nano seconds to run.
@@ -100,34 +128,34 @@ which ain’t performant.
 In such cases we can use struct backed by class. This way we can gain the value semantics of the
 struct and faster results from the classes.
 
-## 
+### Implementing Structs backed by Classes
 ``` swift
 public struct HTTPRequest{
-	private class _Storage{
-		var method: HTTPMethod
-		var target: String
-		var version: HTTPVersion
-		var headers: [(String, String)]
-		var body: [UInt8]?
-		var trailers: [(String, String)]?
-		
-		init(method: HTTPMethod = .GET, target: String, version: HTTPVersion=HTTPVersion(), headers: [(String, String)],body: [UInt8]? , trailers: [(String, String)]?) {
-			//[…]
-		}
-	}
-	private var _storage: _Storage
+    private class _Storage{
+        var method: HTTPMethod
+        var target: String
+        var version: HTTPVersion
+        var headers: [(String, String)]
+        var body: [UInt8]?
+        var trailers: [(String, String)]?
+        
+        init(method: HTTPMethod = .GET, target: String, version: HTTPVersion=HTTPVersion(), headers: [(String, String)],body: [UInt8]? , trailers: [(String, String)]?) {
+            //[…]
+        }
+    }
+    private var _storage: _Storage
 }
 ```
 ``` swift 
 extension HTTPRequest{
-	public var target: HTTPMethod {
-		get{
-		      return self._storage.target
-		}
-		set{
-		     self._storage.target=newValue
-		}
-	}
+    public var target: HTTPMethod {
+        get{
+              return self._storage.target
+        }
+        set{
+             self._storage.target=newValue
+        }
+    }
 }
 ```
 ``` swift
@@ -153,7 +181,7 @@ acessed from multiple threads and mutated independently. However, if there is a 
 we’ll get undefined behavior.
 
 
-## 
+###  Struct backed by class with copy-on write
 ``` swift 
 //Implementation:
 //Struct backed by class with copy-on write
@@ -184,6 +212,7 @@ structs for some more performance like this but repeated copy-on-write in our co
 complexity of O(N^2) performance which is actually slow. This is why it isn’t automated in our
 swift compiler as well. 
 
+### Drawbacks of Copy-on-Write
 One downside of Copy-on-write is that value types like arrays, dictionary and sets maintain a 
 reference count for all the number of copies created for that variable. So, whenever a new copy 
 is created, the internal reference count is incremented. Updating the reference count is a slow 
@@ -195,7 +224,7 @@ Another limitation of copy-on-write can be that they can create accidental copie
 Indices are wrapper for base collection, start and end index. It keeps reference to the base collection to advance 
 the indices. This extra reference can be a performance issue as it would result in unnecessary copies when a 
 collection was mutated during iteration. 
-However, if our index is an integer type, we can still optimize it using **CountableRange<Index> 
+However, if our index is an integer type, we can still optimize it using *CountableRange<Index>*
 
 COW can create accidental copies here. For example:
 ``` swift
@@ -228,11 +257,12 @@ Now, if we create a container that stores a value, we can either modify the stor
  
  ```
 
-## Concurrency and locking performance
+## [Concurrency and locking performance](https://developer.apple.com/videos/play/wwdc2021/10254/)
 
 A concurrent code can be higher in performance if it doesn’t have common concurrency problems like 
 deadlocks, priority inversion, race conditions, data races and contains lesser lock contention pattern. 
 
+### Race Conditions with Semaphores
 In a concurrent environment, race condition is quite common if the progrmamer is not careful.
 For instance, if there are 2 threads who are trying to access a single resource at the same time, 
 then there are chances of race condition. Race conditions can be avoided with the use of semaphores as
@@ -356,6 +386,7 @@ fails the guard condtion and prints insufficent account balance.
 "welcome to Stripe payment gateway"
 "Payment failure due to insufficient Account Balance, stripe transaction cancelled"
 ```
+### Priority Inversion with Semaphores
 Semaphores can avoid race conditions but sometimes it can introduce priority inversion and deadlocks as a consequence.
 for example in the following code, high priority tasks runs first and then other tasks are executed.
 ```
@@ -440,6 +471,8 @@ The problem with this code is that we have used semaphore in one function and th
 accessed by multiple threads with different quality of services. As a result this can cause priority inversion.
 In the worst case scenario, we can encounter deadlocks by using semaphores. Deadlocks can also occur due to 
 bad code design or bad implementation in a multithreaded environment. 
+
+### Thread Explosion 
 When we submit lots of tasks say 1000 tasks to a concurrent queue, then the code becomes very slow and 
 saturates all the threads until all cpu cores are saturated.
 
@@ -464,20 +497,21 @@ func deserializeArticles(from data: Data) throws -> [Article] { … }
 func updateDatabase(with articles: [Article], for feed: Feed) { … }
 let urlSession = URLSession(configuration: .default, delegate: self, delegateQueue: concurrentQueue)
 for feed in feedsToUpdate {
-	let dataTask = urlSession.dataTask(with: feed.url) { data, response, error in
-		guard let data = data else { return }
-		do {
-		     let articles = try deserializeArticles(from: data)
-		     databaseQueue.sync {
-			 	updateDatabase(with: articles, for: feed)
-		     }
-		} catch {
+    let dataTask = urlSession.dataTask(with: feed.url) { data, response, error in
+        guard let data = data else { return }
+        do {
+             let articles = try deserializeArticles(from: data)
+             databaseQueue.sync {
+                 updateDatabase(with: articles, for: feed)
+             }
+        } catch {
             print("Error during article deserialization: \(error.localizedDescription)")
         }
-	}
-	dataTask.resume( )
+    }
+    dataTask.resume( )
 }
 ```
+### Runtime Contract
 For good performance, swift concurrency provides ability to switch between continuations 
 instead of full context switches. This behaviour is implemented by making a runtime contract 
 that threads are always able to make forward progress by use of language features like :
@@ -499,14 +533,14 @@ Rewriting code with async/await semantics to acheive better performance of our a
 func deserializeArticles(from data: Data) throws -> [Article] { … }
 func updateDatabase(with articles: [Article], for feed: Feed) async  { … }
 await withThrowingTaskGroup(of: [Article].self) { group in
-	for feed in feedsToUpdate {
-		group.async {
-			let (data, response) = try await URLSession.shared.data(from: feed.url)
-			let articles = try deserializeArticles(from: data)
-			await updateDatabase(with: articles, for: feed)
-			return articles
-		}
-	}
+    for feed in feedsToUpdate {
+        group.async {
+            let (data, response) = try await URLSession.shared.data(from: feed.url)
+            let articles = try deserializeArticles(from: data)
+            await updateDatabase(with: articles, for: feed)
+            return articles
+        }
+    }
 }
 ```
 
@@ -523,12 +557,14 @@ Therefore, it is advised to use concurrent queue, only if there is measurable pe
 Even multiple concurrent threads where each thread is running sequentially and as long as they
 don’t communicate via shared memory, they can obtain desired results but once different 
 concurrent threads share memory, the program crashes. To avoid this, we use thread 
-synchronisation. Synchronization offers 
+synchronisation. 
+### Synchronization
+It offers 
 1) Mutual Exclusion 
 2) Reentrancy and Prioritisation
 3) Main Actor
 
-### Mutual Exclusion
+### [Mutual Exclusion](https://developer.apple.com/videos/play/wwdc2021/10133/)
 Consider an example of updating database with some article by syncing it to a serial queue. 
 If the queue is not running, the calling thread is reused to execute the work item on the queue
 without any context switch. If the serial queue is running ,the calling thread is blocked. 
@@ -565,6 +601,7 @@ Data races can be detected through enabling Thread Sanitizer by navigating to
 Product > Scheme > Edit Scheme. After that, in the edit scheme dialog choose 
 Run > Diagnostic > and select the Thread Sanitizer checkbox. This setting can improve our
 application in avoiding data races but can increase the build time for our application.
+### Accessing mutable state within the actor
 Consider example:
 Here in this code, we are incrementing the count till 1000 times and once dispatch group completes
 execution. Count value is displayed on the label. 
@@ -635,6 +672,7 @@ Task {
     statusLabel.text = "\(await counter.count)"
 }
 ```
+### Acessing mutable state outside the actor
 Actors can help us in preventing data races by ensuring mutual exclusion to its mutable states
 as long as we are accessing the mutable states within the actors. But If the mutable states are 
 accessible outside of the actors, a data race can still occur!
@@ -719,6 +757,7 @@ Different kinds of sendable types are:
 2) Actor types because they synchronize access to their mutable state.
 3) Immutable classes Or if the class that internally performs synchronization, for example with a lock, 
 to ensure safe concurrent access then it can be a sendable type.
+
 4) @Sendable function types
 
 Rewriting code with structs conforming to Sendable protocol.
@@ -796,7 +835,7 @@ threads in a concurrent environment. The difference between them is that there a
 before the resource is accessed in Data races while Race condition follows check and update mechanism
 such that it checks for a condition or validation before the resource is updated.
  
-###Reentrancy and Prioritization
+### [Reentrancy and Prioritization](https://developer.apple.com/videos/play/wwdc2021/10254/)
 Semaphores provides no surety of always executing high priority tasks first. As a solution to this, 
 actors can be used.
 If we call a method on an actor that is not running, the calling thread can be reused to 
@@ -810,15 +849,15 @@ prioritise work well due to notion of reentrancy.
  
 
 ![alt text](https://github.com/shilpeegupta14/images/blob/main/Screenshot%202022-01-17%20at%201.25.47%20AM.png?raw=true)
-	            
-				      Quick recap of contention and non contention cases.
+                
+                      Quick recap of contention and non contention cases.
                  
 Since actors are designed for reentrancy the runtime may choose to move the higher priority item to
 the front of the queue ahead of the lower priority items. This way higher priority work could be
 executed first with lower priority work following later. This directly addresses the problem of
 priority inversion allowing for more effective scheduling and resource utilisation. 
 
-### Main Actor
+### [Main Actor](https://developer.apple.com/videos/play/wwdc2021/10133/)
 Consider the following code where we have a function update Articles on MainActor, which loads
 articles out of the database and updates the UI for each article. Each iteration of the loop
 requires at least two context switches: one to hop from the main actor to the database actor and
@@ -829,10 +868,10 @@ another to hop back.
 func loadArticle(with id: ID) async throws -> Article { …}
 @MainActor func updateUI(for article: Article) async { .. }
 @MainActor func updateArticles(for ids: [ID]) async throws {
-	for id in ids{
-		let article = try await database.loadArticle(with: id)
-		await updateUI(for: article)
-	}
+    for id in ids{
+        let article = try await database.loadArticle(with: id)
+        await updateUI(for: article)
+    }
 }
 ```
 
@@ -852,8 +891,8 @@ increase performance by reducing the time complexity of the program.
 func loadArticles(with ids: [ID]) async throws -> [Article]
 @MainActor func updateUI(for articles: [Article]) async 
 @MainActor func updateArticles(for ids: [ID]) async throws {
-	let articles=try await database.loadArticles(with: ids)
-	await updateUI(for: articles)
+    let articles=try await database.loadArticles(with: ids)
+    await updateUI(for: articles)
 }
 ```
 Note that swift makes no guaranty that the thread that executed the code before the await is the
@@ -961,17 +1000,21 @@ an inconsistent state and restoring consistency before an await. Any assumptions
 about global state, clocks, timers, or an actor will need to be checked after the await.
 If the code gets suspended, the program will move on before our code gets resumed.
 
+### ⚠️ Potential Bug
 At the await point in our code, also known as suspension point, several tasks are descheduled
 which can hold lock across await. Though locks ensure code safety and ensure forward progress 
 but persistent lock contention limits performance. Primitives like os_unfair_locks and NSLocks
 are safe but compiler doesn’t provide support in correct usage of locks and the programmer 
 needs to handle it correctly.
 
+### Throwback to other primitives
 Primitives like semaphores and condition variables are unsafe to use with swift 
 concurrency as they hide dependency information from the swift runtime and introduces a 
 dependency in code execution.
 
+### Lock Contention Pattern
 Lock contention depends upon how often lock is requested and how long it is held once acquired.
 If its higher, the processor can sit idle despite of plenty of task provided. Hence it is advised
 to use concurrency primitives like await, actors, and task groups, that are made known at compile
 time in order to preserve the runtime contract and achieve higher performance.
+
