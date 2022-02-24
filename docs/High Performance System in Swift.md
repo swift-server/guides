@@ -23,7 +23,7 @@ but with more examples and some other scenarios to better understand it.
         - [Mutual Exclusion](#mutual-exclusion)
             - This covers:
                 - [Actors with data races when we are accessing the mutable states within the actors](#accessing-mutable-state-within-the-actor)
-                - Actors with data races when we are accessing the mutable states outside the actors and fixing it with sendable protocols(#accessing-mutable-state-outside-the-actor)
+                - [Actors with data races when we are accessing the mutable states outside the actors and fixing it with sendable protocols](#accessing-mutable-state-outside-the-actor)
         - [Reentrancy and Prioritization](#reentrancy-and-prioritization)
             - This covers actors with Priority Inversion
         - [Main Actor](#main-actor)
