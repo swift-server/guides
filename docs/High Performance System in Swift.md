@@ -29,7 +29,6 @@ but with more examples and some other scenarios to better understand it.
         - [Main Actor](#main-actor)
             -Batching up code to improve time complexity and performance
     - [Potential bug around await semantics](#⚠️-potential-bug)
-    - [Other primitives](#throwback-to-other-primitives)
     - [Lock Contention Pattern](#lock-contention-pattern)
 
 
@@ -1006,8 +1005,6 @@ which can hold lock across await. Though locks ensure code safety and ensure for
 but persistent lock contention limits performance. Primitives like os_unfair_locks and NSLocks
 are safe but compiler doesn’t provide support in correct usage of locks and the programmer 
 needs to handle it correctly.
-
-### Throwback to other primitives
 Primitives like semaphores and condition variables are unsafe to use with swift 
 concurrency as they hide dependency information from the swift runtime and introduces a 
 dependency in code execution.
