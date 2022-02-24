@@ -22,13 +22,13 @@ but with more examples and some other scenarios to better understand it.
     - [Synchronization offering:](#synchronization)
         - [Mutual Exclusion](#mutual-exclusion)
             - This covers:
-                - [Actors with data races when we are accessing the mutable states within the actors](#acessing-mutable-state-within-the-actor)
-                - Actors with data races when we are accessing the mutable states outside the actors and fixing it with sendable protocols(#acessing-mutable-state-outside-the-actor)
+                - [Actors with data races when we are accessing the mutable states within the actors](#accessing-mutable-state-within-the-actor)
+                - Actors with data races when we are accessing the mutable states outside the actors and fixing it with sendable protocols(#accessing-mutable-state-outside-the-actor)
         - [Reentrancy and Prioritization](#reentrancy-and-prioritization)
             - This covers actors with Priority Inversion
         - [Main Actor](#main-actor)
             -Batching up code to improve time complexity and performance
-    - [Potential bug around await semantics](#bug-potential)
+    - [Potential bug around await semantics](#⚠️-potential-bug)
     - [Other primitives](#throwback-to-other-primitives)
     - [Lock Contention Pattern](#lock-contention-pattern)
 
@@ -88,7 +88,7 @@ public struct HTTPRequest {
     public var body: [UInt8]?
     public var trailers: [(String, String)]?
 ]
-public     enum HTTPMethod: String{
+public enum HTTPMethod: String{
     case GET
     case POST
     case DELETE
@@ -131,19 +131,19 @@ struct and faster results from the classes.
 ### Implementing Structs backed by Classes
 ``` swift
 public struct HTTPRequest{
-    private class _Storage{
-        var method: HTTPMethod
-        var target: String
-        var version: HTTPVersion
-        var headers: [(String, String)]
-        var body: [UInt8]?
-        var trailers: [(String, String)]?
-        
-        init(method: HTTPMethod = .GET, target: String, version: HTTPVersion=HTTPVersion(), headers: [(String, String)],body: [UInt8]? , trailers: [(String, String)]?) {
-            //[…]
-        }
-    }
-    private var _storage: _Storage
+ 	private class _Storage{
+ 		var method: HTTPMethod
+ 		var target: String
+ 		var version: HTTPVersion
+ 		var headers: [(String, String)]
+ 		var body: [UInt8]?
+ 		var trailers: [(String, String)]?
+ 		
+ 		init(method: HTTPMethod = .GET, target: String, version: HTTPVersion=HTTPVersion(), headers: [(String, String)],body: [UInt8]? , trailers: [(String, String)]?) {
+ 			//[…]
+ 		}
+ 	}
+ 	private var _storage: _Storage
 }
 ```
 ``` swift 
@@ -672,7 +672,7 @@ Task {
     statusLabel.text = "\(await counter.count)"
 }
 ```
-### Acessing mutable state outside the actor
+### Accessing mutable state outside the actor
 Actors can help us in preventing data races by ensuring mutual exclusion to its mutable states
 as long as we are accessing the mutable states within the actors. But If the mutable states are 
 accessible outside of the actors, a data race can still occur!
