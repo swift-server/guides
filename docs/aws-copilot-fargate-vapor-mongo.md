@@ -46,7 +46,7 @@ vapor new api -n
 ```
 
 ## Step 3: Add Project Dependencies
-Vapor initializes a *Package.swift* file for the project dependencies. Your project requires an additional library, MongoDBVapor. Add the MongoDBVapor library to the project and target dependencies of your *Package.swift* file.
+Vapor initializes a *Package.swift* file for the project dependencies. Your project requires an additional library, [MongoDBVapor](https://github.com/mongodb/mongodb-vapor). Add the MongoDBVapor library to the project and target dependencies of your *Package.swift* file.
 
 Your updated file should look like this:
 
