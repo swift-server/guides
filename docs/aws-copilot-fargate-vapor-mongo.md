@@ -175,7 +175,7 @@ CMD ["serve", "--env", "production", "--hostname", "0.0.0.0", "--port", "8080"]
 ## Step 5: Update the Vapor Source Code
 Vapor also generates the sample files needed to code an API. You must customize these files with code that exposes your To Do List API methods and interacts with your MongoDB database.
 
-The *configure.swift* file initializes an application wide connection to your MongoDB database. It retrieves the connection string to your MongoDB database from an environment variable at runtime.
+The *configure.swift* file initializes an application-wide pool of connections to your MongoDB database. It retrieves the connection string to your MongoDB database from an environment variable at runtime.
 
 Replace the contents of the file with the following code:
 
