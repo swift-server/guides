@@ -1,6 +1,6 @@
 # Server Side Swift on AWS with Fargate, Vapor, and MongoDB Atlas
 
-This guide illustrates how to deploy a Server Side Swift workload on AWS. The workload is a REST API for tracking a To Do List. It uses the [Vapor](https://vapor.codes/) framework to program the API methods. The methods store and retrieve data in a [MongoDB Atlas](https://www.mongodb.com/atlas/database) cloud database. The Vapor application is containerized and deployed to AWS on AWS Fargate using the [AWS Copilot](https://aws.github.io/copilot-cli/) toolchain.
+This guide illustrates how to deploy a Server-Side Swift workload on AWS. The workload is a REST API for tracking a To Do List. It uses the [Vapor](https://vapor.codes/) framework to program the API methods. The methods store and retrieve data in a [MongoDB Atlas](https://www.mongodb.com/atlas/database) cloud database. The Vapor application is containerized and deployed to AWS on AWS Fargate using the [AWS Copilot](https://aws.github.io/copilot-cli/) toolkit.
 
 ## Architecture
 ![Architecture](../images/aws/aws-fargate-vapor-mongo.png)
