@@ -1,3 +1,6 @@
+> **Warning**
+> The guides are now part of Swift.org and will continue to be evolved there. This repo is now archived
+
 # Swift on Server Development Guide
 
 ## Introduction
